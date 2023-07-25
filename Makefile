@@ -159,7 +159,7 @@ test-e2e-teardown:
 
 # Double colon rules allow repeated rule declarations.
 # Repeated rules are executed in the order they appear.
-$(e2e_targets):: test-e2e-setup image/scorecard-test
+$(e2e_targets):: test-e2e-setup
 test-e2e:: $(e2e_tests) ## Run e2e tests
 
 test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
