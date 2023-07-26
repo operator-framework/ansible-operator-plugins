@@ -25,8 +25,8 @@ import (
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugin"
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds"
-	sdkpluginutil "github.com/operator-framework/ansible-operator-plugins/internal/plugins/util"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds"
+	sdkpluginutil "github.com/operator-framework/ansible-operator-plugins/pkg/plugins/util"
 )
 
 const (

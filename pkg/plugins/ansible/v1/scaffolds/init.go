@@ -23,15 +23,15 @@ import (
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugins"
 	kustomizev2Alpha "sigs.k8s.io/kubebuilder/v3/pkg/plugins/common/kustomize/v2-alpha"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/config/rbac"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/config/testing"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/config/testing/pullpolicy"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/molecule/mdefault"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/molecule/mkind"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/playbooks"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/roles"
 	"github.com/operator-framework/ansible-operator-plugins/internal/version"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/config/rbac"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/config/testing"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/config/testing/pullpolicy"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/molecule/mdefault"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/molecule/mkind"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/playbooks"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/roles"
 )
 
 const imageName = "controller:latest"

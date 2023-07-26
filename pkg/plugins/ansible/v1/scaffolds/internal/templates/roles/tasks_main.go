@@ -19,26 +19,27 @@ import (
 
 	"sigs.k8s.io/kubebuilder/v3/pkg/machinery"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/constants"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/constants"
 )
 
-var _ machinery.Template = &DefaultsMain{}
+var _ machinery.Template = &TasksMain{}
 
-type DefaultsMain struct {
+type TasksMain struct {
 	machinery.TemplateMixin
 	machinery.ResourceMixin
 }
 
 // SetTemplateDefaults implements machinery.Template
-func (f *DefaultsMain) SetTemplateDefaults() error {
+func (f *TasksMain) SetTemplateDefaults() error {
 	if f.Path == "" {
-		f.Path = filepath.Join(constants.RolesDir, "%[kind]", "defaults", "main.yml")
+		f.Path = filepath.Join(constants.RolesDir, "%[kind]", "tasks", "main.yml")
 		f.Path = f.Resource.Replacer().Replace(f.Path)
 	}
-	f.TemplateBody = defaultsMainAnsibleTmpl
+
+	f.TemplateBody = tasksMainAnsibleTmpl
 	return nil
 }
 
-const defaultsMainAnsibleTmpl = `---
-# defaults file for {{ .Resource.Kind }}
+const tasksMainAnsibleTmpl = `---
+# tasks file for {{ .Resource.Kind }}
 `
