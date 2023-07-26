@@ -39,7 +39,7 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 .PHONY: generate
 generate: operator-sdk build # Generate CLI docs and samples
 	rm -rf testdata
-	go run ./hack/generate/samples/generate_testdata.go
+	go run ./hack/generate/samples/generate_testdata.go --bin $(OPERATOR_SDK)
 	go generate ./...
 
 .PHONY: fix
