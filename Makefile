@@ -11,6 +11,8 @@ export GIT_VERSION = $(shell git describe --dirty --tags --always)
 export GIT_COMMIT = $(shell git rev-parse HEAD)
 export K8S_VERSION = 1.26.0
 
+export OPERATOR_SDK_VERSION = $(IMAGE_VERSION)
+
 # Build settings
 export TOOLS_DIR = tools/bin
 export SCRIPTS_DIR = tools/scripts
@@ -35,7 +37,7 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 ##@ Development
 
 .PHONY: generate
-generate: build # Generate CLI docs and samples
+generate: operator-sdk build # Generate CLI docs and samples
 	rm -rf testdata
 	go run ./hack/generate/samples/generate_testdata.go
 	go generate ./...
@@ -140,7 +142,7 @@ e2e_targets := test-e2e $(e2e_tests)
 export KIND_CLUSTER := osdk-test
 
 KUBEBUILDER_ASSETS = $(PWD)/$(shell go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest && $(shell go env GOPATH)/bin/setup-envtest use $(K8S_VERSION) --bin-dir tools/bin/ -p path)
-test-e2e-setup:: build dev-install cluster-create
+test-e2e-setup:: operator-sdk build dev-install cluster-create
 
 .PHONY: cluster-create
 cluster-create::
@@ -168,6 +170,23 @@ test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
 test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
 	go run ./hack/generate/samples/molecule/generate.go
 	./hack/tests/e2e-ansible-molecule.sh
+
+.PHONY: operator-sdk
+OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+operator-sdk: ## Download operator-sdk locally if necessary.
+ifeq (,$(wildcard $(OPERATOR_SDK)))
+ifeq (, $(shell which operator-sdk 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(OPERATOR_SDK)) ;\
+	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
+	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
+	chmod +x $(OPERATOR_SDK) ;\
+	}
+else
+OPERATOR_SDK = $(shell which operator-sdk)
+endif
+endif
 
 .DEFAULT_GOAL := help
 .PHONY: help
