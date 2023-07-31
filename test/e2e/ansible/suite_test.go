@@ -17,6 +17,7 @@ package e2e_ansible_test
 import (
 	"fmt"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -46,8 +47,10 @@ var _ = BeforeSuite(func() {
 	var err error
 
 	By("creating a new test context")
-	tc, err = testutils.NewTestContext(testutils.BinaryName, "GO111MODULE=on")
+	tc, err = testutils.NewTestContext(path.Join("../../../../", testutils.BinaryName), "GO111MODULE=on")
 	Expect(err).NotTo(HaveOccurred())
+
+	fmt.Println(tc.Dir)
 
 	tc.Domain = "example.com"
 	tc.Version = "v1alpha1"
@@ -139,14 +142,6 @@ var _ = BeforeSuite(func() {
 	By("building the project image")
 	err = tc.Make("docker-build", "IMG="+tc.ImageName)
 	Expect(err).NotTo(HaveOccurred())
-
-	onKind, err := tc.IsRunningOnKind()
-	Expect(err).NotTo(HaveOccurred())
-	if onKind {
-		By("loading the required images into Kind cluster")
-		Expect(tc.LoadImageToKindCluster()).To(Succeed())
-		Expect(tc.LoadImageToKindClusterWithName("quay.io/operator-framework/scorecard-test:dev")).To(Succeed())
-	}
 
 	By("generating bundle")
 	Expect(tc.GenerateBundle()).To(Succeed())

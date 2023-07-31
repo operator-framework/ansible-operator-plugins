@@ -4,12 +4,14 @@ SHELL = /bin/bash
 # This value must be updated to the release tag of the most recent release, a change that must
 # occur in the release commit. IMAGE_VERSION will be removed once each subproject that uses this
 # version is moved to a separate repo and release process.
-export IMAGE_VERSION = v1.30.0
+export IMAGE_VERSION = v1.31.0
 # Build-time variables to inject into binaries
 export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
 export GIT_VERSION = $(shell git describe --dirty --tags --always)
 export GIT_COMMIT = $(shell git rev-parse HEAD)
 export K8S_VERSION = 1.26.0
+
+export OPERATOR_SDK_VERSION = $(IMAGE_VERSION)
 
 # Build settings
 export TOOLS_DIR = tools/bin
@@ -35,9 +37,9 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 ##@ Development
 
 .PHONY: generate
-generate: build # Generate CLI docs and samples
+generate: operator-sdk build # Generate CLI docs and samples
 	rm -rf testdata
-	go run ./hack/generate/samples/generate_testdata.go
+	go run ./hack/generate/samples/generate_testdata.go --bin $(OPERATOR_SDK)
 	go generate ./...
 
 .PHONY: fix
@@ -45,7 +47,7 @@ fix: ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
 	make setup-lint
-	$(TOOLS_DIR)/golangci-lint run --fix
+	$(TOOLS_DIR)/golangci-lint run --fix --timeout=2m
 
 .PHONY: setup-lint
 setup-lint: ## Setup the lint
@@ -140,7 +142,7 @@ e2e_targets := test-e2e $(e2e_tests)
 export KIND_CLUSTER := osdk-test
 
 KUBEBUILDER_ASSETS = $(PWD)/$(shell go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest && $(shell go env GOPATH)/bin/setup-envtest use $(K8S_VERSION) --bin-dir tools/bin/ -p path)
-test-e2e-setup:: build dev-install cluster-create
+test-e2e-setup:: operator-sdk build dev-install cluster-create
 
 .PHONY: cluster-create
 cluster-create::
@@ -162,12 +164,28 @@ test-e2e-teardown:
 $(e2e_targets):: test-e2e-setup
 test-e2e:: $(e2e_tests) ## Run e2e tests
 
-test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
+test-e2e-ansible:: operator-sdk image/ansible-operator ## Run Ansible e2e tests
 	go test -count=1 ./internal/ansible/proxy/...
 	go test ./test/e2e/ansible -v -ginkgo.v
 test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
 	go run ./hack/generate/samples/molecule/generate.go
 	./hack/tests/e2e-ansible-molecule.sh
+
+## Location to install dependencies to
+LOCALBIN ?= $(shell pwd)/bin
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+.PHONY: operator-sdk
+OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+operator-sdk: ## Download operator-sdk locally if necessary.
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(OPERATOR_SDK)) ;\
+	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
+	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
+	chmod +x $(OPERATOR_SDK) ;\
+	}
 
 .DEFAULT_GOAL := help
 .PHONY: help

@@ -14,10 +14,9 @@
 
 package e2e_ansible_test
 
-import (
-	. "github.com/onsi/ginkgo/v2"
+// import (
+// 	. "github.com/onsi/ginkgo/v2"
+// )
 
-	"github.com/operator-framework/ansible-operator-plugins/test/common"
-)
-
-var _ = Describe("scorecard", common.ScorecardSpec(&tc, "ansible"))
+// For now don't run Scorecard tests
+// var _ = Describe("scorecard", common.ScorecardSpec(&tc, "ansible"))

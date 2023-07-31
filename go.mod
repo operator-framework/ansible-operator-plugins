@@ -19,7 +19,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.0
 	github.com/stretchr/testify v1.8.2
-	github.com/thoas/go-funk v0.8.0
 	golang.org/x/text v0.9.0
 	k8s.io/api v0.26.2
 	k8s.io/apiextensions-apiserver v0.26.2

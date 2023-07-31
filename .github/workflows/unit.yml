@@ -14,6 +14,3 @@ jobs:
         with:
           fetch-depth: 0
       - run: make test-unit
-      - uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: coverage.out

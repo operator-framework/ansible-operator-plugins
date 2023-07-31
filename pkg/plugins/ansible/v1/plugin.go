@@ -19,7 +19,7 @@ import (
 	cfgv3 "sigs.k8s.io/kubebuilder/v3/pkg/config/v3"
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugin"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins"
 )
 
 const pluginName = "base.ansible" + plugins.DefaultNameQualifier

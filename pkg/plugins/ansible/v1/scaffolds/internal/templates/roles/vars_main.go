@@ -19,7 +19,7 @@ import (
 
 	"sigs.k8s.io/kubebuilder/v3/pkg/machinery"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/constants"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/constants"
 )
 
 var _ machinery.Template = &VarsMain{}

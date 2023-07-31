@@ -23,13 +23,13 @@ import (
 	"sigs.k8s.io/kubebuilder/v3/pkg/model/resource"
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugins"
 
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/constants"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/config/crd"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/config/rbac"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/molecule/mdefault"
-	"github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/playbooks"
-	ansibleroles "github.com/operator-framework/ansible-operator-plugins/internal/plugins/ansible/v1/scaffolds/internal/templates/roles"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/constants"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/config/crd"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/config/rbac"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/molecule/mdefault"
+	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/playbooks"
+	ansibleroles "github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1/scaffolds/internal/templates/roles"
 )
 
 var _ plugins.Scaffolder = &apiScaffolder{}
