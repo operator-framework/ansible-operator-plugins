@@ -143,14 +143,6 @@ var _ = BeforeSuite(func() {
 	err = tc.Make("docker-build", "IMG="+tc.ImageName)
 	Expect(err).NotTo(HaveOccurred())
 
-	onKind, err := tc.IsRunningOnKind()
-	Expect(err).NotTo(HaveOccurred())
-	if onKind {
-		By("loading the required images into Kind cluster")
-		Expect(tc.LoadImageToKindCluster()).To(Succeed())
-		Expect(tc.LoadImageToKindClusterWithName("quay.io/operator-framework/scorecard-test:dev")).To(Succeed())
-	}
-
 	By("generating bundle")
 	Expect(tc.GenerateBundle()).To(Succeed())
 })
