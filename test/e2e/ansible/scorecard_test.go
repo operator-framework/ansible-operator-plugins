@@ -14,9 +14,9 @@
 
 package e2e_ansible_test
 
-import (
-	. "github.com/onsi/ginkgo/v2"
-)
+// import (
+// 	. "github.com/onsi/ginkgo/v2"
+// )
 
 // For now don't run Scorecard tests
 // var _ = Describe("scorecard", common.ScorecardSpec(&tc, "ansible"))
