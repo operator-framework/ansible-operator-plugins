@@ -29,7 +29,7 @@ import (
 	kbtestutils "sigs.k8s.io/kubebuilder/v3/test/e2e/utils"
 )
 
-const BinaryName = "operator-sdk"
+const BinaryName = "./bin/operator-sdk"
 
 // TestContext wraps kubebuilder's e2e TestContext.
 type TestContext struct {
