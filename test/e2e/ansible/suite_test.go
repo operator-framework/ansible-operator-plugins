@@ -17,6 +17,7 @@ package e2e_ansible_test
 import (
 	"fmt"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -46,8 +47,10 @@ var _ = BeforeSuite(func() {
 	var err error
 
 	By("creating a new test context")
-	tc, err = testutils.NewTestContext(testutils.BinaryName, "GO111MODULE=on")
+	tc, err = testutils.NewTestContext(path.Join("../../../../", testutils.BinaryName), "GO111MODULE=on")
 	Expect(err).NotTo(HaveOccurred())
+
+	fmt.Println(tc.Dir)
 
 	tc.Domain = "example.com"
 	tc.Version = "v1alpha1"

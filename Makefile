@@ -47,7 +47,7 @@ fix: ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
 	make setup-lint
-	$(TOOLS_DIR)/golangci-lint run --fix
+	$(TOOLS_DIR)/golangci-lint run --fix --timeout=2m
 
 .PHONY: setup-lint
 setup-lint: ## Setup the lint
@@ -179,7 +179,6 @@ $(LOCALBIN):
 .PHONY: operator-sdk
 OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
 operator-sdk: ## Download operator-sdk locally if necessary.
-ifeq (,$(wildcard $(OPERATOR_SDK)))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPERATOR_SDK)) ;\
@@ -187,7 +186,6 @@ ifeq (,$(wildcard $(OPERATOR_SDK)))
 	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
 	chmod +x $(OPERATOR_SDK) ;\
 	}
-endif
 
 .DEFAULT_GOAL := help
 .PHONY: help
