@@ -164,7 +164,7 @@ test-e2e-teardown:
 $(e2e_targets):: test-e2e-setup
 test-e2e:: $(e2e_tests) ## Run e2e tests
 
-test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
+test-e2e-ansible:: operator-sdk image/ansible-operator ## Run Ansible e2e tests
 	go test -count=1 ./internal/ansible/proxy/...
 	go test ./test/e2e/ansible -v -ginkgo.v
 test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
