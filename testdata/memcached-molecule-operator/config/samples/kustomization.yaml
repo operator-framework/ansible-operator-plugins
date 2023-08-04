@@ -1,0 +1,7 @@
+## Append samples of your project ##
+resources:
+- cache_v1alpha1_memcached.yaml
+- cache_v1alpha1_foo.yaml
+- cache_v1alpha1_memfin.yaml
+- ignore_v1_secret.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

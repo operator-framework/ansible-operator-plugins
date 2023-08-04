@@ -22,7 +22,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/ansible"
+	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/ansible"
 	"github.com/operator-framework/ansible-operator-plugins/internal/testutils"
 )
 
@@ -69,10 +69,10 @@ func main() {
 	log.Infof("creating Ansible Molecule Mock Samples under %s", samplesRoot)
 
 	if sample == "" || sample == "memcached" {
-		ansible.GenerateMoleculeSample(binaryPath, samplesRoot)
+		ansible.GenerateMoleculeSample(samplesRoot)
 	}
 
 	if sample == "" || sample == "advanced" {
-		ansible.GenerateAdvancedMoleculeSample(binaryPath, samplesRoot)
+		ansible.GenerateAdvancedMoleculeSample(samplesRoot)
 	}
 }

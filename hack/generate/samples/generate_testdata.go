@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/ansible"
+	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/ansible"
 
 	log "github.com/sirupsen/logrus"
 
@@ -53,5 +53,5 @@ func main() {
 	log.Infof("writing sample directories under %s", samplesPath)
 
 	log.Infof("creating Ansible Memcached Sample")
-	ansible.GenerateMemcachedSamples(binaryPath, samplesPath)
+	ansible.GenerateMoleculeSample(samplesPath)
 }

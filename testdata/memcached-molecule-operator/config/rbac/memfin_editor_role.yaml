@@ -1,0 +1,31 @@
+# permissions for end users to edit memfins.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: memfin-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: memcached-molecule-operator
+    app.kubernetes.io/part-of: memcached-molecule-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: memfin-editor-role
+rules:
+- apiGroups:
+  - cache.example.com
+  resources:
+  - memfins
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cache.example.com
+  resources:
+  - memfins/status
+  verbs:
+  - get
