@@ -63,8 +63,8 @@ func (kvi *KubeVersionInfo) GitVersion() string {
 
 // KubeVersion is an implementation of the KubernetesVersion interface
 type KubeVersion struct {
-	clientVersion KubeVersionInfo `json:"clientVersion,omitempty"`
-	serverVersion KubeVersionInfo `json:"serverVersion,omitempty"`
+	clientVersion KubeVersionInfo
+	serverVersion KubeVersionInfo
 }
 
 // KubeVersionOptions is for configuring a KubeVersion

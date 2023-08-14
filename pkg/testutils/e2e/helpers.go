@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,13 +37,13 @@ func CreateCustomResources(sample sample.Sample, kubectl kubernetes.Kubectl) err
 func AllowProjectBeMultiGroup(sample sample.Sample) error {
 	const multiGroup = `multigroup: true
 `
-	projectBytes, err := ioutil.ReadFile(filepath.Join(sample.Dir(), "PROJECT"))
+	projectBytes, err := os.ReadFile(filepath.Join(sample.Dir(), "PROJECT"))
 	if err != nil {
 		return err
 	}
 
 	projectBytes = append([]byte(multiGroup), projectBytes...)
-	err = ioutil.WriteFile(filepath.Join(sample.Dir(), "PROJECT"), projectBytes, 0644)
+	err = os.WriteFile(filepath.Join(sample.Dir(), "PROJECT"), projectBytes, 0644)
 	if err != nil {
 		return err
 	}

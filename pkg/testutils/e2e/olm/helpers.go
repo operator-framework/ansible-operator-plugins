@@ -2,7 +2,7 @@ package olm
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -40,7 +40,7 @@ packagemanifests: kustomize %s
 	$(KUSTOMIZE) build config/manifests | operator-sdk generate packagemanifests -q --version $(VERSION) $(PKG_MAN_OPTS)
 `
 
-	makefileBytes, err := ioutil.ReadFile(filepath.Join(sample.Dir(), "Makefile"))
+	makefileBytes, err := os.ReadFile(filepath.Join(sample.Dir(), "Makefile"))
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ packagemanifests: kustomize %s
 
 	// update makefile by adding the packagemanifests target
 	makefileBytes = append([]byte(makefilePackagemanifestsFragment), makefileBytes...)
-	err = ioutil.WriteFile(filepath.Join(sample.Dir(), "Makefile"), makefileBytes, 0644)
+	err = os.WriteFile(filepath.Join(sample.Dir(), "Makefile"), makefileBytes, 0644)
 	if err != nil {
 		return err
 	}
@@ -140,14 +140,14 @@ func removeAllAnnotationLines(annotations map[string]string, filePaths []string)
 	}
 
 	for _, file := range filePaths {
-		b, err := ioutil.ReadFile(file)
+		b, err := os.ReadFile(file)
 		if err != nil {
 			return err
 		}
 		for _, re := range annotationREs {
 			b = re.ReplaceAll(b, []byte{})
 		}
-		err = ioutil.WriteFile(file, b, 0644)
+		err = os.WriteFile(file, b, 0644)
 		if err != nil {
 			return err
 		}

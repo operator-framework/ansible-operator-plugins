@@ -74,7 +74,10 @@ func (gcc *GenericCommandContext) Run(cmd *exec.Cmd, path ...string) ([]byte, er
 	// make the directory if it does not already exist
 	if dir != "" {
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			os.MkdirAll(dir, 0755)
+			err = os.MkdirAll(dir, 0755)
+			if err != nil {
+				return nil, fmt.Errorf("making all directories: %w", err)
+			}
 		}
 	}
 

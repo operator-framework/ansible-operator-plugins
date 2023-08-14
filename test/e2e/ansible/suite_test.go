@@ -106,69 +106,6 @@ var _ = BeforeSuite(func() {
 		}, 3*time.Minute, time.Second).Should(Succeed())
 	}
 
-	// By("replacing project Dockerfile to use ansible base image with the dev tag")
-	// err = kbutil.ReplaceRegexInFile(filepath.Join(ansibleSample.Dir(), "Dockerfile"), "quay.io/operator-framework/ansible-operator:.*", "quay.io/operator-framework/ansible-operator:dev")
-	// Expect(err).Should(Succeed())
-
-	// TODO(everettraven): IMO this should be moved to the logic for implementing the sample. Keeping as is for now to make finish the PoC easier
-	// ---------------------------------------------------
-
-	// gvk := ansibleSample.GVKs()[0]
-
-	// By("adding Memcached mock task to the role")
-	// err = kbutil.InsertCode(filepath.Join(ansibleSample.Dir(), "roles", strings.ToLower(gvk.Kind), "tasks", "main.yml"),
-	// 	"periodSeconds: 3", memcachedWithBlackListTask)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("creating an API definition to add a task to delete the config map")
-	// cmd := exec.Command(ansibleSample.Binary(), "create", "api",
-	// 	"--group", gvk.Group,
-	// 	"--version", gvk.Version,
-	// 	"--kind", "Memfin",
-	// 	"--generate-role")
-	// _, err = ansibleSample.CommandContext().Run(cmd, ansibleSample.Name())
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("updating spec of Memfin sample")
-	// err = kbutil.ReplaceInFile(
-	// 	filepath.Join(ansibleSample.Dir(), "config", "samples", fmt.Sprintf("%s_%s_memfin.yaml", gvk.Group, gvk.Version)),
-	// 	"# TODO(user): Add fields here",
-	// 	"foo: bar")
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("adding task to delete config map")
-	// err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "roles", "memfin", "tasks", "main.yml"),
-	// 	"# tasks file for Memfin", taskToDeleteConfigMap)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("adding to watches finalizer and blacklist")
-	// err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "watches.yaml"),
-	// 	"playbook: playbooks/memcached.yml", memcachedWatchCustomizations)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("create API to test watching multiple GVKs")
-	// cmd = exec.Command(ansibleSample.Binary(), "create", "api",
-	// 	"--group", gvk.Group,
-	// 	"--version", gvk.Version,
-	// 	"--kind", "Foo",
-	// 	"--generate-role")
-	// _, err = ansibleSample.CommandContext().Run(cmd, ansibleSample.Name())
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("updating spec of Foo sample")
-	// err = kbutil.ReplaceInFile(
-	// 	filepath.Join(ansibleSample.Dir(), "config", "samples", fmt.Sprintf("%s_%s_foo.yaml", gvk.Group, gvk.Version)),
-	// 	"# TODO(user): Add fields here",
-	// 	"foo: bar")
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("adding RBAC permissions for the Memcached Kind")
-	// err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "config", "rbac", "role.yaml"),
-	// 	"#+kubebuilder:scaffold:rules", rolesForBaseOperator)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// ---------------------------------------------------
-
 	By("building the project image")
 	err = operator.BuildOperatorImage(ansibleSample, image)
 	Expect(err).NotTo(HaveOccurred())
@@ -188,7 +125,7 @@ var _ = AfterSuite(func() {
 	By("uninstalling prerequisites")
 	if isPrometheusManagedBySuite {
 		By("uninstalling Prometheus")
-		prometheus.UninstallPrometheusOperator(kctl)
+		Expect(prometheus.UninstallPrometheusOperator(kctl)).To(Succeed())
 	}
 
 	By("destroying container image and work dir")
@@ -200,83 +137,3 @@ var _ = AfterSuite(func() {
 		Expect(err).To(BeNil())
 	}
 })
-
-const memcachedWithBlackListTask = `
-
-- operator_sdk.util.k8s_status:
-    api_version: cache.example.com/v1alpha1
-    kind: Memcached
-    name: "{{ ansible_operator_meta.name }}"
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    status:
-      test: "hello world"
-
-- kubernetes.core.k8s:
-    definition:
-      kind: Secret
-      apiVersion: v1
-      metadata:
-        name: test-secret
-        namespace: "{{ ansible_operator_meta.namespace }}"
-      data:
-        test: aGVsbG8K
-- name: Get cluster api_groups
-  set_fact:
-    api_groups: "{{ lookup('kubernetes.core.k8s', cluster_info='api_groups', kubeconfig=lookup('env', 'K8S_AUTH_KUBECONFIG')) }}"
-
-- name: create project if projects are available
-  kubernetes.core.k8s:
-    definition:
-      apiVersion: project.openshift.io/v1
-      kind: Project
-      metadata:
-        name: testing-foo
-  when: "'project.openshift.io' in api_groups"
-
-- name: Create ConfigMap to test blacklisted watches
-  kubernetes.core.k8s:
-    definition:
-      kind: ConfigMap
-      apiVersion: v1
-      metadata:
-        name: test-blacklist-watches
-        namespace: "{{ ansible_operator_meta.namespace }}"
-      data:
-        arbitrary: afdasdfsajsafj
-    state: present`
-
-const taskToDeleteConfigMap = `- name: delete configmap for test
-  kubernetes.core.k8s:
-    kind: ConfigMap
-    api_version: v1
-    name: deleteme
-    namespace: default
-    state: absent`
-
-const memcachedWatchCustomizations = `playbook: playbooks/memcached.yml
-  finalizer:
-    name: cache.example.com/finalizer
-    role: memfin
-  blacklist:
-    - group: ""
-      version: v1
-      kind: ConfigMap`
-
-const rolesForBaseOperator = `
-  ##
-  ## Apply customize roles for base operator
-  ##
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-#+kubebuilder:scaffold:rules
-`

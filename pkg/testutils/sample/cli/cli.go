@@ -192,7 +192,7 @@ func (gs *CliSample) GenerateInit() error {
 		return fmt.Errorf("encountered an error getting the current working directory: %w", err)
 	}
 	// defer returning to the original working directory
-	defer func() { os.Chdir(cwd) }()
+	defer func() { _ = os.Chdir(cwd) }()
 	// Change directory to the context specified
 	err = os.MkdirAll(gs.Dir(), 0777)
 	if err != nil {
@@ -239,7 +239,7 @@ func (gs *CliSample) GenerateApi() error {
 		return fmt.Errorf("encountered an error getting the current working directory: %w", err)
 	}
 	// defer returning to the original working directory
-	defer func() { os.Chdir(cwd) }()
+	defer func() { _ = os.Chdir(cwd) }()
 	// Change directory to the context specified
 	err = os.MkdirAll(gs.Dir(), os.ModeDir)
 	if err != nil {
@@ -288,7 +288,7 @@ func (gs *CliSample) GenerateWebhook() error {
 		return fmt.Errorf("encountered an error getting the current working directory: %w", err)
 	}
 	// defer returning to the original working directory
-	defer func() { os.Chdir(cwd) }()
+	defer func() { _ = os.Chdir(cwd) }()
 	err = os.MkdirAll(gs.Dir(), os.ModeDir)
 	if err != nil {
 		return fmt.Errorf("encountered an error creating context directory: %w", err)

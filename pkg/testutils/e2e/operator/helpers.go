@@ -37,7 +37,7 @@ func UndeployOperator(sample sample.Sample) error {
 	cmd := exec.Command("make", "undeploy")
 	_, err := sample.CommandContext().Run(cmd, sample.Name())
 	if err != nil {
-		fmt.Errorf("encountered an error when undeploying the operator: %w", err)
+		return fmt.Errorf("encountered an error when undeploying the operator: %w", err)
 	}
 
 	return nil
