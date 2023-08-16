@@ -8,11 +8,6 @@ import (
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/kubebuilder/v3/pkg/cli"
-	cfgv3 "sigs.k8s.io/kubebuilder/v3/pkg/config/v3"
-	"sigs.k8s.io/kubebuilder/v3/pkg/plugin"
-	kustomizev2Alpha "sigs.k8s.io/kubebuilder/v3/pkg/plugins/common/kustomize/v2-alpha"
-	"sigs.k8s.io/kubebuilder/v3/pkg/plugins/golang"
-	golangv4 "sigs.k8s.io/kubebuilder/v3/pkg/plugins/golang/v4"
 )
 
 // CliSample is a generalized object that implements the Sample interface. It is meant
@@ -112,41 +107,7 @@ func WithCLI(c *cli.CLI) CliSampleOption {
 
 // NewCliSample will return a new CliSample object. The values used in the CliSample can be modified using CliSampleOption functions
 func NewCliSample(opts ...CliSampleOption) (*CliSample, error) {
-	// Create a very basic default CLI with a go/v3 plugin
-	gov4Bundle, _ := plugin.NewBundle(golang.DefaultNameQualifier, golangv4.Plugin{}.Version(),
-		kustomizev2Alpha.Plugin{},
-		golangv4.Plugin{},
-	)
-
-	c, err := cli.New(
-		cli.WithCommandName("cli"),
-		cli.WithVersion("v0.0.0"),
-		cli.WithPlugins(
-			gov4Bundle,
-		),
-		cli.WithDefaultPlugins(cfgv3.Version, gov4Bundle),
-		cli.WithDefaultProjectVersion(cfgv3.Version),
-		cli.WithCompletion(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("encountered an error creating a new CliSample: %w", err)
-	}
-
-	gs := &CliSample{
-		domain: "example.com",
-		name:   "cli-sample",
-		gvks: []schema.GroupVersionKind{
-			{
-				Group:   "sample",
-				Version: "v1",
-				Kind:    "Cli",
-			},
-		},
-		repo:           "",
-		commandContext: command.NewGenericCommandContext(),
-		plugins:        []string{"go/v3"},
-		cli:            c,
-	}
+	gs := &CliSample{}
 
 	for _, opt := range opts {
 		opt(gs)

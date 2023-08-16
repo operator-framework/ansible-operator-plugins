@@ -8,8 +8,8 @@ import (
 )
 
 // InstallCertManagerBundle installs CertManager onto a Kubernetes cluster
-func InstallCertManagerBundle(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) error {
-	url, err := getCertManagerURL(hasv1beta1CRs, kubectl)
+func InstallCertManagerBundle(kubectl kubernetes.Kubectl) error {
+	url, err := getCertManagerURL(kubectl)
 	if err != nil {
 		return fmt.Errorf("encountered an error when getting the bundle URL: %w", err)
 	}
@@ -34,7 +34,7 @@ func InstallCertManagerBundle(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) er
 
 // UninstallCertManagerBundle uninstalls CertManager from a Kubernetes cluster
 func UninstallCertManagerBundle(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) error {
-	url, err := getCertManagerURL(hasv1beta1CRs, kubectl)
+	url, err := getCertManagerURL(kubectl)
 	if err != nil {
 		return fmt.Errorf("encountered an error when getting the bundle URL: %w", err)
 	}
@@ -49,14 +49,12 @@ func UninstallCertManagerBundle(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) 
 
 // getCertManagerUrl is a helper function to determine the CertManager
 // that should be installed on a cluster based on the Kubernetes version
-func getCertManagerURL(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) (string, error) {
-	certmanagerVersionWithv1beta2CRs := "v0.11.0"
+func getCertManagerURL(kubectl kubernetes.Kubectl) (string, error) {
 	certmanagerLegacyVersion := "v1.0.4"
 	certmanagerVersion := "v1.5.3"
 
 	certmanagerURLTmplLegacy := "https://github.com/jetstack/cert-manager/releases/download/%s/cert-manager-legacy.yaml"
 	certmanagerURLTmpl := "https://github.com/jetstack/cert-manager/releases/download/%s/cert-manager.yaml"
-	// Return a URL for the manifest bundle with v1beta1 CRs.
 
 	kubeVersion, err := kubectl.Version()
 	if err != nil {
@@ -70,10 +68,6 @@ func getCertManagerURL(hasv1beta1CRs bool, kubectl kubernetes.Kubectl) (string, 
 	serverMinor, err := strconv.ParseUint(kubeVersion.ServerVersion().Minor(), 10, 64)
 	if err != nil {
 		return "", fmt.Errorf("encountered an error trying to parse Kubernetes Minor Version: %w", err)
-	}
-
-	if hasv1beta1CRs {
-		return fmt.Sprintf(certmanagerURLTmpl, certmanagerVersionWithv1beta2CRs), nil
 	}
 
 	// Determine which URL to use for a manifest bundle with v1 CRs.
