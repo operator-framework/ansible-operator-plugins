@@ -15,7 +15,7 @@ export K8S_VERSION = 1.26.0
 export TOOLS_DIR = tools/bin
 export SCRIPTS_DIR = tools/scripts
 REPO = $(shell go list -m)
-BUILD_DIR = build
+BUILD_DIR = .
 export GO_BUILD_ASMFLAGS = all=-trimpath=$(shell dirname $(PWD))
 export GO_BUILD_GCFLAGS = all=-trimpath=$(shell dirname $(PWD))
 export GO_BUILD_LDFLAGS =  \
@@ -27,13 +27,14 @@ export GO_BUILD_LDFLAGS =  \
  \
 
 GO_BUILD_ARGS = \
-  -gcflags $(GO_BUILD_GCFLAGS) -asmflags $(GO_BUILD_ASMFLAGS) -ldflags $(GO_BUILD_LDFLAGS)
+  -gcflags "$(GO_BUILD_GCFLAGS)" -asmflags "$(GO_BUILD_ASMFLAGS)" -ldflags "$(GO_BUILD_LDFLAGS)"
 
 export GO111MODULE = on
 export CGO_ENABLED = 0
 export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 
-export IMAGE_REPO = quay.io/rh_ee_bpalmer/ansible-operator
+# TODO(everettraven): update this to be an operator-framework quay repo
+export IMAGE_REPO = quay.io/operator-framework/ansible-operator-plugins
 export IMAGE_TAG = dev
 
 ##@ Development
@@ -83,7 +84,7 @@ build/ansible-operator:
 # Convenience wrapper for building all remotely hosted images.
 .PHONY: image-build
 IMAGE_TARGET_LIST = ansible-operator
-image-build: $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
+image-build: build $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
 
 # Build an image.
 BUILD_IMAGE_REPO = quay.io/operator-framework
@@ -93,7 +94,7 @@ DOCKER_PROGRESS = --progress plain
 endif
 image/%: export DOCKER_CLI_EXPERIMENTAL = enabled
 image/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*:dev -f ./images/$*/Dockerfile --load .
+	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-plugins:dev -f ./images/$*/Dockerfile --load .
 ##@ Release
 
 ## TODO: Add release targets here
@@ -177,6 +178,7 @@ goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
 
 export ENABLE_RELEASE_PIPELINE ?= false
 export GORELEASER_ARGS         ?= --snapshot --clean
+release: IMAGE_TAG = $(GIT_VERSION)
 release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
 
