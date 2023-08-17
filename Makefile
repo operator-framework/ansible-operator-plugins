@@ -33,7 +33,6 @@ export GO111MODULE = on
 export CGO_ENABLED = 0
 export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 
-# TODO(everettraven): update this to be an operator-framework quay repo
 export IMAGE_REPO = quay.io/operator-framework/ansible-operator-plugins
 export IMAGE_TAG = dev
 
