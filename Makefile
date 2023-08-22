@@ -4,11 +4,11 @@ SHELL = /bin/bash
 # This value must be updated to the release tag of the most recent release, a change that must
 # occur in the release commit. IMAGE_VERSION will be removed once each subproject that uses this
 # version is moved to a separate repo and release process.
-export IMAGE_VERSION = v1.31.0
+export IMAGE_VERSION = v0.0.0
 # Build-time variables to inject into binaries
-# export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
-# export GIT_VERSION = $(shell git describe --dirty --tags --always)
-# export GIT_COMMIT = $(shell git rev-parse HEAD)
+export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
+export GIT_VERSION = $(shell git describe --dirty --tags --always)
+export GIT_COMMIT = $(shell git rev-parse HEAD)
 export K8S_VERSION = 1.26.0
 
 # Build settings
@@ -173,7 +173,6 @@ GORELEASER := $(abspath $(LOCALBIN)/goreleaser)
 GORELEASER_VERSION       ?= v1.16.2
 goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
 	GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
-
 
 export ENABLE_RELEASE_PIPELINE ?= false
 export GORELEASER_ARGS         ?= --snapshot --clean --timeout=60m
