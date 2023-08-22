@@ -8,7 +8,6 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/onsi/ginkgo/v2 v2.7.0
 	github.com/onsi/gomega v1.24.2
-	github.com/operator-framework/api v0.17.4-0.20230223191600-0131a6301e42
 	github.com/operator-framework/operator-lib v0.11.1-0.20230306195046-28cadc6b6055
 	github.com/operator-framework/operator-registry v1.28.0
 	github.com/prometheus/client_golang v1.14.0
@@ -30,6 +29,8 @@ require (
 	sigs.k8s.io/kubebuilder/v3 v3.9.1
 	sigs.k8s.io/yaml v1.3.0
 )
+
+require github.com/operator-framework/api v0.17.4-0.20230223191600-0131a6301e42 // indirect
 
 require (
 	github.com/Microsoft/hcsshim v0.9.4 // indirect

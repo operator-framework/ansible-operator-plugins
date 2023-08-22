@@ -26,5 +26,7 @@ var (
 	// most recent operator-sdk release tag such that samples are generated with the correct versions
 	// in a release commit. Once each element that uses this version is moved to a separate repo
 	// and release process, this variable will be removed.
-	ImageVersion = "unknown"
+
+	// TODO: find a way to make this automated. For now manually update this before releases.
+	ImageVersion = "v1.31.0"
 )
