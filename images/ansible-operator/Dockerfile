@@ -19,7 +19,6 @@ ENV PIP_NO_CACHE_DIR=1 \
     PIPENV_CLEAR=1
 # Ensure fresh metadata rather than cached metadata, install system and pip python deps,
 # and remove those not needed at runtime.
-# pip3~=21.1 fixes a vulnerability described in https://github.com/pypa/pip/pull/9827.
 RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum update -y \
   && yum install -y libffi-devel openssl-devel python39-devel gcc python39-pip python39-setuptools \
