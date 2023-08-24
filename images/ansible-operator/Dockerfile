@@ -2,7 +2,7 @@
 # It is built with dependencies that take a while to download, thus speeding
 # up ansible deploy jobs.
 
-FROM registry.access.redhat.com/ubi8/ubi:8.8 AS basebuilder
+FROM registry.access.redhat.com/ubi8/ubi:8.8-1032 AS basebuilder
 
 # Install Rust so that we can ensure backwards compatibility with installing/building the cryptography wheel across all platforms
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -30,7 +30,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-FROM registry.access.redhat.com/ubi8/ubi:8.8 as base
+FROM registry.access.redhat.com/ubi8/ubi:8.8-1032 as base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.

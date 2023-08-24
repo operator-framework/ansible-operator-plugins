@@ -93,7 +93,7 @@ DOCKER_PROGRESS = --progress plain
 endif
 image/%: export DOCKER_CLI_EXPERIMENTAL = enabled
 image/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-plugins:dev -f ./images/$*/Dockerfile --load .
+	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-plugins:dev -f ./images/$*/Dockerfile --load . --no-cache
 ##@ Release
 
 ## TODO: Add release targets here
