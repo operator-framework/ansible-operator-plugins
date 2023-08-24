@@ -4,33 +4,37 @@ SHELL = /bin/bash
 # This value must be updated to the release tag of the most recent release, a change that must
 # occur in the release commit. IMAGE_VERSION will be removed once each subproject that uses this
 # version is moved to a separate repo and release process.
-export IMAGE_VERSION = v1.31.0
+export IMAGE_VERSION = v0.0.0
 # Build-time variables to inject into binaries
-# export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
-# export GIT_VERSION = $(shell git describe --dirty --tags --always)
-# export GIT_COMMIT = $(shell git rev-parse HEAD)
+export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
+export GIT_VERSION = $(shell git describe --dirty --tags --always)
+export GIT_COMMIT = $(shell git rev-parse HEAD)
 export K8S_VERSION = 1.26.0
 
 # Build settings
 export TOOLS_DIR = tools/bin
 export SCRIPTS_DIR = tools/scripts
 REPO = $(shell go list -m)
-BUILD_DIR = build
-GO_ASMFLAGS = -asmflags "all=-trimpath=$(shell dirname $(PWD))"
-GO_GCFLAGS = -gcflags "all=-trimpath=$(shell dirname $(PWD))"
-GO_BUILD_ARGS = \
-  $(GO_GCFLAGS) $(GO_ASMFLAGS) \
-  -ldflags " \
+BUILD_DIR = .
+export GO_BUILD_ASMFLAGS = all=-trimpath=$(shell dirname $(PWD))
+export GO_BUILD_GCFLAGS = all=-trimpath=$(shell dirname $(PWD))
+export GO_BUILD_LDFLAGS =  \
     -X '$(REPO)/internal/version.Version=$(SIMPLE_VERSION)' \
     -X '$(REPO)/internal/version.GitVersion=$(GIT_VERSION)' \
     -X '$(REPO)/internal/version.GitCommit=$(GIT_COMMIT)' \
     -X '$(REPO)/internal/version.KubernetesVersion=v$(K8S_VERSION)' \
     -X '$(REPO)/internal/version.ImageVersion=$(IMAGE_VERSION)' \
-  " \
+ \
+
+GO_BUILD_ARGS = \
+  -gcflags "$(GO_BUILD_GCFLAGS)" -asmflags "$(GO_BUILD_ASMFLAGS)" -ldflags "$(GO_BUILD_LDFLAGS)"
 
 export GO111MODULE = on
 export CGO_ENABLED = 0
 export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
+
+export IMAGE_REPO = quay.io/operator-framework/ansible-operator-plugins
+export IMAGE_TAG = dev
 
 ##@ Development
 
@@ -79,12 +83,7 @@ build/ansible-operator:
 # Convenience wrapper for building all remotely hosted images.
 .PHONY: image-build
 IMAGE_TARGET_LIST = ansible-operator
-image-build: $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
-
-# Convenience wrapper for building dependency base images.
-.PHONY: image-build-base
-IMAGE_BASE_TARGET_LIST = ansible-operator
-image-build-base: $(foreach i,$(IMAGE_BASE_TARGET_LIST),image-base/$(i)) ## Build all images.
+image-build: build $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
 
 # Build an image.
 BUILD_IMAGE_REPO = quay.io/operator-framework
@@ -94,11 +93,7 @@ DOCKER_PROGRESS = --progress plain
 endif
 image/%: export DOCKER_CLI_EXPERIMENTAL = enabled
 image/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*:dev -f ./images/$*/Dockerfile --load .
-
-image-base/%: export DOCKER_CLI_EXPERIMENTAL = enabled
-image-base/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-base:dev -f ./images/$*/base.Dockerfile --load images/$*
+	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-plugins:dev -f ./images/$*/Dockerfile --load . --no-cache
 ##@ Release
 
 ## TODO: Add release targets here
@@ -168,6 +163,22 @@ test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
 test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
 	go run ./hack/generate/samples/molecule/generate.go
 	./hack/tests/e2e-ansible-molecule.sh
+
+## Location to install dependencies to
+LOCALBIN ?= $(shell pwd)/bin
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+GORELEASER := $(abspath $(LOCALBIN)/goreleaser)
+GORELEASER_VERSION       ?= v1.16.2
+goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
+	GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
+
+export ENABLE_RELEASE_PIPELINE ?= false
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=60m
+release: IMAGE_TAG = $(GIT_VERSION)
+release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
+	$(GORELEASER) $(GORELEASER_ARGS)
 
 .DEFAULT_GOAL := help
 .PHONY: help

@@ -77,7 +77,7 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 	}
 
 	log.Info("replacing project Dockerfile to use ansible base image with the dev tag")
-	err := kbutil.ReplaceRegexInFile(filepath.Join(sample.Dir(), "Dockerfile"), "quay.io/operator-framework/ansible-operator:.*", "quay.io/operator-framework/ansible-operator:dev")
+	err := kbutil.ReplaceRegexInFile(filepath.Join(sample.Dir(), "Dockerfile"), "quay.io/operator-framework/ansible-operator-plugins:.*", "quay.io/operator-framework/ansible-operator-plugins:dev")
 	pkg.CheckError("replacing Dockerfile", err)
 
 	log.Info("adding RBAC permissions")
