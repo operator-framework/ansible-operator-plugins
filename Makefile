@@ -49,7 +49,7 @@ fix: ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
 	make setup-lint
-	$(TOOLS_DIR)/golangci-lint run --fix --timeout=2m
+	$(TOOLS_DIR)/golangci-lint run --fix --timeout=5m
 
 .PHONY: setup-lint
 setup-lint: ## Setup the lint
@@ -175,7 +175,7 @@ goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
 	GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
 
 export ENABLE_RELEASE_PIPELINE ?= false
-export GORELEASER_ARGS         ?= --snapshot --clean --timeout=60m
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
 release: IMAGE_TAG = $(GIT_VERSION)
 release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
