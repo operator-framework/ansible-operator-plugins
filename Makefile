@@ -4,7 +4,7 @@ SHELL = /bin/bash
 # This value must be updated to the release tag of the most recent release, a change that must
 # occur in the release commit. IMAGE_VERSION will be removed once each subproject that uses this
 # version is moved to a separate repo and release process.
-export IMAGE_VERSION = v0.0.0
+export IMAGE_VERSION = v0.1.0
 # Build-time variables to inject into binaries
 export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
 export GIT_VERSION = $(shell git describe --dirty --tags --always)
@@ -49,7 +49,7 @@ fix: ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
 	make setup-lint
-	$(TOOLS_DIR)/golangci-lint run --fix --timeout=2m
+	$(TOOLS_DIR)/golangci-lint run --fix --timeout=5m
 
 .PHONY: setup-lint
 setup-lint: ## Setup the lint
@@ -175,7 +175,7 @@ goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
 	GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
 
 export ENABLE_RELEASE_PIPELINE ?= false
-export GORELEASER_ARGS         ?= --snapshot --clean --timeout=60m
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
 release: IMAGE_TAG = $(GIT_VERSION)
 release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
