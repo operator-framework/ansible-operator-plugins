@@ -176,7 +176,7 @@ goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
 
 export ENABLE_RELEASE_PIPELINE ?= false
 export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
-release: IMAGE_TAG = $(GIT_VERSION)
+release: IMAGE_TAG ?= $(GIT_VERSION)
 release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
 
