@@ -33,7 +33,7 @@ export GO111MODULE = on
 export CGO_ENABLED = 0
 export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 
-export IMAGE_REPO ?= quay.io/operator-framework/ansible-operator-plugins
+export IMAGE_REPO ?= quay.io/operator-framework/ansible-operator
 export IMAGE_TAG ?= dev
 
 ##@ Development
@@ -93,7 +93,7 @@ DOCKER_PROGRESS = --progress plain
 endif
 image/%: export DOCKER_CLI_EXPERIMENTAL = enabled
 image/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*-plugins:dev -f ./images/$*/Dockerfile --load . --no-cache
+	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*:$(IMAGE_TAG) -f ./images/$*/Dockerfile --load . --no-cache
 ##@ Release
 
 ## TODO: Add release targets here
