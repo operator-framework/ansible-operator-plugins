@@ -18,8 +18,3 @@ Welcome to the Operator SDK! Before contributing, make sure to:
 **Motivation for the change:**
 
 
-**Checklist**
-
-If the pull request includes user-facing changes, extra documentation is required:
-- [ ] Add a new changelog fragment in `changelog/fragments` (see [`changelog/fragments/00-template.yaml`](https://github.com/operator-framework/ansible-operator-plugins/tree/master/changelog/fragments/00-template.yaml))
-- [ ] Add or update relevant sections of the docs website in [`website/content/en/docs`](https://github.com/operator-framework/ansible-operator-plugins/tree/master/website/content/en/docs)
