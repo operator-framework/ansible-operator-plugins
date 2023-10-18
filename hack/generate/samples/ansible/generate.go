@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/kubebuilder/v3/pkg/cli"
 	cfgv3 "sigs.k8s.io/kubebuilder/v3/pkg/config/v3"
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugin"
-	kustomizev2Alpha "sigs.k8s.io/kubebuilder/v3/pkg/plugins/common/kustomize/v2-alpha"
+	kustomizev2 "sigs.k8s.io/kubebuilder/v3/pkg/plugins/common/kustomize/v2"
 	"sigs.k8s.io/kubebuilder/v3/pkg/plugins/golang"
 )
 
@@ -42,9 +42,10 @@ var memcachedGVK = schema.GroupVersionKind{
 }
 
 func getCli() *cli.CLI {
-	ansibleBundle, _ := plugin.NewBundle(golang.DefaultNameQualifier, ansible.Plugin{}.Version(),
-		kustomizev2Alpha.Plugin{},
-		ansible.Plugin{},
+	ansibleBundle, _ := plugin.NewBundleWithOptions(
+		plugin.WithName(golang.DefaultNameQualifier),
+		plugin.WithVersion(ansible.Plugin{}.Version()),
+		plugin.WithPlugins(kustomizev2.Plugin{}, ansible.Plugin{}),
 	)
 
 	c, err := cli.New(

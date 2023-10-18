@@ -24,6 +24,7 @@ import (
 	"github.com/operator-framework/ansible-operator-plugins/internal/ansible/proxy/controllermap"
 	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -43,7 +44,13 @@ var _ = BeforeSuite(func() {
 		return
 	}
 	var err error
-	testMgr, err = manager.New(config.GetConfigOrDie(), manager.Options{Namespace: "default"})
+	testMgr, err = manager.New(config.GetConfigOrDie(), manager.Options{
+		Cache: cache.Options{
+			Namespaces: []string{
+				"default",
+			},
+		},
+	})
 	if err != nil {
 		Fail(fmt.Sprintf("Failed to instantiate manager: %v", err))
 	}

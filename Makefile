@@ -6,10 +6,11 @@ SHELL = /bin/bash
 # version is moved to a separate repo and release process.
 export IMAGE_VERSION = v1.32.0
 # Build-time variables to inject into binaries
-export SIMPLE_VERSION = $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
-export GIT_VERSION = $(shell git describe --dirty --tags --always)
-export GIT_COMMIT = $(shell git rev-parse HEAD)
-export K8S_VERSION = 1.26.0
+export SIMPLE_VERSION := $(shell (test "$(shell git describe --tags)" = "$(shell git describe --tags --abbrev=0)" && echo $(shell git describe --tags)) || echo $(shell git describe --tags --abbrev=0)+git)
+export GIT_VERSION := $(shell git describe --dirty --tags --always)
+export GIT_COMMIT := $(shell git rev-parse HEAD)
+export K8S_VERSION = 1.27.0
+export ENVTEST_VERSION = 1.27.x
 
 # Build settings
 export TOOLS_DIR = tools/bin
@@ -35,6 +36,8 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 
 export IMAGE_REPO ?= quay.io/operator-framework/ansible-operator
 export IMAGE_TAG ?= dev
+
+ENVTEST ?= $(LOCALBIN)/setup-envtest
 
 ##@ Development
 
@@ -74,7 +77,7 @@ build: ## Build ansible-operator
 	@mkdir -p $(BUILD_DIR)
 	go build $(GO_BUILD_ARGS) -o $(BUILD_DIR) ./cmd/ansible-operator
 
-.PHONY: build/ansible-operator 
+.PHONY: build/ansible-operator
 build/ansible-operator:
 	go build $(GO_BUILD_ARGS) -o $(BUILD_DIR)/$(@F) ./cmd/$(@F)
 
@@ -124,8 +127,13 @@ test-docs: ## Test doc links
 
 .PHONY: test-unit
 TEST_PKGS = $(shell go list ./... | grep -v -E 'github.com/operator-framework/ansible-operator-plugins/test/')
-test-unit: ## Run unit tests
-	go test -coverprofile=coverage.out -covermode=count -short $(TEST_PKGS)
+test-unit: envtest ## Run unit tests
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_VERSION) -p path)" go test -coverprofile=coverage.out -covermode=count -short $(TEST_PKGS)
+
+.PHONY: envtest
+envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
+$(ENVTEST): $(LOCALBIN)
+	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
 e2e_tests := test-e2e-ansible test-e2e-ansible-molecule
 e2e_targets := test-e2e $(e2e_tests)
@@ -134,7 +142,6 @@ e2e_targets := test-e2e $(e2e_tests)
 .PHONY: test-e2e-setup
 export KIND_CLUSTER := osdk-test
 
-KUBEBUILDER_ASSETS = $(PWD)/$(shell go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest && $(shell go env GOPATH)/bin/setup-envtest use $(K8S_VERSION) --bin-dir tools/bin/ -p path)
 test-e2e-setup:: build dev-install cluster-create
 
 .PHONY: cluster-create
