@@ -179,14 +179,13 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 		os.Exit(1)
 	}
 
+	options.NewCache = func(config *rest.Config, opts cache.Options) (cache.Cache, error) {
+		return cache.New(config, cache.Options{
+			Namespaces: watchNamespaces,
+		})
+	}
 	// Create a new manager to provide shared dependencies and start components
-	mgr, err := manager.New(cfg, manager.Options{
-		NewCache: func(config *rest.Config, opts cache.Options) (cache.Cache, error) {
-			return cache.New(config, cache.Options{
-				Namespaces: watchNamespaces,
-			})
-		},
-	})
+	mgr, err := manager.New(cfg, options)
 	if err != nil {
 		log.Error(err, "Failed to create a new manager.")
 		os.Exit(1)
