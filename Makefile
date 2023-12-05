@@ -37,6 +37,13 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 export IMAGE_REPO ?= quay.io/operator-framework/ansible-operator
 export IMAGE_TAG ?= dev
 
+# This is to allow for building and testing on Apple Silicon.
+# These values default to the host's GOOS and GOARCH, but should
+# be overridden when running builds and tests on Apple Silicon unless
+# you are only building the binary
+BUILD_GOOS ?= $(shell go env GOOS)
+BUILD_GOARCH ?= $(shell go env GOARCH)
+
 ENVTEST ?= $(LOCALBIN)/setup-envtest
 
 ##@ Development
@@ -70,16 +77,16 @@ clean: ## Cleanup build artifacts and tool binaries.
 
 .PHONY: install
 install: ## Install ansible-operator
-	go install $(GO_BUILD_ARGS) ./cmd/ansible-operator
+	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go install $(GO_BUILD_ARGS) ./cmd/ansible-operator
 
 .PHONY: build
 build: ## Build ansible-operator
 	@mkdir -p $(BUILD_DIR)
-	go build $(GO_BUILD_ARGS) -o $(BUILD_DIR) ./cmd/ansible-operator
+	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go build $(GO_BUILD_ARGS) -o $(BUILD_DIR) ./cmd/ansible-operator
 
 .PHONY: build/ansible-operator
 build/ansible-operator:
-	go build $(GO_BUILD_ARGS) -o $(BUILD_DIR)/$(@F) ./cmd/$(@F)
+	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go build $(GO_BUILD_ARGS) -o $(BUILD_DIR)/$(@F) ./cmd/$(@F)
 
 ##@ Dev image build
 
