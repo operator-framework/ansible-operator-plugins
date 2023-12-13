@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -366,26 +365,16 @@ func Load(path string, maxReconciler, ansibleVerbosity int) ([]Watch, error) {
 // with the actual values of the env variables. If an env variable is not defined
 // the ${VAR} reference remains as-is in the returned byte array.
 func replaceEnvVariables(input []byte) []byte {
-	// Regular expression to match "${VARIABLE}"
-	envVarPattern := regexp.MustCompile(`\${([^}]+)}`)
-
-	// Replace environment variable references with their actual values
-	result := envVarPattern.ReplaceAllFunc(input, func(match []byte) []byte {
-		// Extract the variable name from the match
-		varName := string(envVarPattern.FindSubmatch(match)[1])
-
-		// Retrieve the value of the environment variable
+	outputString := os.Expand(string(input), func(varName string) string {
 		varValue, exists := os.LookupEnv(varName)
 		if !exists {
 			// If the environment variable doesn't exist, keep the original reference
-			return match
+			return "${" + varName + "}"
 		}
-
-		// Replace the reference with the actual value
-		return []byte(varValue)
+		return varValue
 	})
 
-	return result
+	return []byte(outputString)
 }
 
 // verify that a given GroupVersionKind has a Version and Kind
