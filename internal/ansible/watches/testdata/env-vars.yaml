@@ -1,0 +1,11 @@
+---
+- version: "${WATCH_VERSION}"
+  group: "app.example.com"
+  kind: "AnsibleSelectorTest"
+  playbook: ${WATCH_PLAYBOOK}
+  selector:
+    matchLabels:
+      ${WATCH_MATCH_LABEL_VAR_NAME}: "${WATCH_MATCH_LABEL_VAR_VALUE}"
+      undefined: "${WATCH_UNDEFINED_ENV_VAR}"
+    matchExpressions:
+      - {key: ${WATCH_MATCH_EXPRESSIONS_KEY}, operator: In, values: [a, b]}

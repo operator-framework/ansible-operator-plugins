@@ -313,11 +313,14 @@ func New(gvk schema.GroupVersionKind, role, playbook string, vars map[string]int
 func Load(path string, maxReconciler, ansibleVerbosity int) ([]Watch, error) {
 	maxConcurrentReconcilesDefault = maxReconciler
 	ansibleVerbosityDefault = ansibleVerbosity
-	b, err := os.ReadFile(path)
+	fileb, err := os.ReadFile(path)
 	if err != nil {
 		log.Error(err, "Failed to get config file")
 		return nil, err
 	}
+
+	// Replace any environment variable references with their values
+	b := replaceEnvVariables(fileb)
 
 	// First unmarshal into a slice of aliases.
 	alias := []alias{}
@@ -356,6 +359,22 @@ func Load(path string, maxReconciler, ansibleVerbosity int) ([]Watch, error) {
 	}
 
 	return watches, nil
+}
+
+// replaceEnvVariables will replace all ${VAR} references found in the byte array
+// with the actual values of the env variables. If an env variable is not defined
+// the ${VAR} reference remains as-is in the returned byte array.
+func replaceEnvVariables(input []byte) []byte {
+	outputString := os.Expand(string(input), func(varName string) string {
+		varValue, exists := os.LookupEnv(varName)
+		if !exists {
+			// If the environment variable doesn't exist, keep the original reference
+			return "${" + varName + "}"
+		}
+		return varValue
+	})
+
+	return []byte(outputString)
 }
 
 // verify that a given GroupVersionKind has a Version and Kind

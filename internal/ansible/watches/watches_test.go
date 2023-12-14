@@ -892,3 +892,44 @@ func TestGetPossibleRolePaths(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceEnvVars(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Unable to get working directory: %v", err)
+	}
+	watchesFile := filepath.Join(cwd, "testdata", "env-vars.yaml")
+	playbookFile := filepath.Join(cwd, "testdata", "playbook.yml")
+
+	t.Setenv("WATCH_PLAYBOOK", playbookFile)
+	t.Setenv("WATCH_VERSION", "v123")
+	t.Setenv("WATCH_MATCH_LABEL_VAR_NAME", "label123")
+	t.Setenv("WATCH_MATCH_LABEL_VAR_VALUE", "value123")
+	t.Setenv("WATCH_MATCH_EXPRESSIONS_KEY", "key123")
+
+	watchSlice, err := Load(watchesFile, 1, 1)
+	if err != nil {
+		// this would fail if the WATCH_PLAYBOOK env var wasn't replaced
+		t.Fatalf("Failed to process watches yaml with env vars: %v", err)
+	}
+	if watchSlice[0].GroupVersionKind.Group != "app.example.com" {
+		t.Fatalf("Failed to parse hardcoded group - the watches yaml did not load properly: %+v", watchSlice[0])
+	}
+	if watchSlice[0].GroupVersionKind.Version != "v123" {
+		t.Fatalf("Failed to replace version with env var: %+v", watchSlice[0])
+	}
+	if labelValue, ok := watchSlice[0].Selector.MatchLabels["label123"]; !ok {
+		t.Fatalf("Failed to replace first match label name with env var: %+v", watchSlice[0])
+	} else if labelValue != "value123" {
+		t.Fatalf("Failed to replace first match label value with env var: %+v", watchSlice[0])
+	}
+	if labelValue, ok := watchSlice[0].Selector.MatchLabels["undefined"]; !ok {
+		t.Fatalf("Failed to find the second match label name: %+v", watchSlice[0])
+	} else if labelValue != "${WATCH_UNDEFINED_ENV_VAR}" {
+		t.Fatalf("Failed to keep env var reference as-is: %+v", watchSlice[0])
+	}
+	keyValue := watchSlice[0].Selector.MatchExpressions[0].Key
+	if keyValue != "key123" {
+		t.Fatalf("Failed to replace match expression key with env var: %+v", watchSlice[0])
+	}
+}
