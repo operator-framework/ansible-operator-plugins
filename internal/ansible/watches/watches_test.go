@@ -901,16 +901,11 @@ func TestReplaceEnvVars(t *testing.T) { //nolint:gocyclo
 	watchesFile := filepath.Join(cwd, "testdata", "env-vars.yaml")
 	playbookFile := filepath.Join(cwd, "testdata", "playbook.yml")
 
-	os.Setenv("WATCH_PLAYBOOK", playbookFile)
-	defer os.Unsetenv("WATCH_PLAYBOOK")
-	os.Setenv("WATCH_VERSION", "v123")
-	defer os.Unsetenv("WATCH_VERSION")
-	os.Setenv("WATCH_MATCH_LABEL_VAR_NAME", "label123")
-	defer os.Unsetenv("WATCH_MATCH_LABEL_VAR_NAME")
-	os.Setenv("WATCH_MATCH_LABEL_VAR_VALUE", "value123")
-	defer os.Unsetenv("WATCH_MATCH_LABEL_VAR_VALUE")
-	os.Setenv("WATCH_MATCH_EXPRESSIONS_KEY", "key123")
-	defer os.Unsetenv("WATCH_MATCH_EXPRESSIONS_KEY")
+	t.Setenv("WATCH_PLAYBOOK", playbookFile)
+	t.Setenv("WATCH_VERSION", "v123")
+	t.Setenv("WATCH_MATCH_LABEL_VAR_NAME", "label123")
+	t.Setenv("WATCH_MATCH_LABEL_VAR_VALUE", "value123")
+	t.Setenv("WATCH_MATCH_EXPRESSIONS_KEY", "key123")
 
 	watchSlice, err := Load(watchesFile, 1, 1)
 	if err != nil {
