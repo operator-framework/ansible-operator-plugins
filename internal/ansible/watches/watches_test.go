@@ -893,7 +893,7 @@ func TestGetPossibleRolePaths(t *testing.T) {
 	}
 }
 
-func TestReplaceEnvVars(t *testing.T) { //nolint:gocyclo
+func TestReplaceEnvVars(t *testing.T) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("Unable to get working directory: %v", err)
