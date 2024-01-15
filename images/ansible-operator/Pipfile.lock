@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ff994ebb09c99f76bf2709018b67c3681d1825870f5ed11b6621129fa442fdfd"
+            "sha256": "b9f02c24843f49666019b50597f1fc743eb31c2726635b8b50a83627d1f79845"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -22,7 +22,6 @@
                 "sha256:8aa49cb1ddbf33d88c2bb4bf09ecd4b0dd8b788e174adca8b88dda6e6bdbf59b"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.9'",
             "version": "==2.15.8"
         },
         "ansible-runner": {
@@ -31,7 +30,6 @@
                 "sha256:79a1bd134d813c8ea3740599c6fd961a11425ce7757f2fd725cf56d6a1a7236c"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
             "version": "==2.3.4"
         },
         "ansible-runner-http": {
@@ -209,7 +207,7 @@
                 "sha256:fd1abc0d89e30cc4e02e4064dc67fcc51bd941eb395c502aac3ec19fab46b519",
                 "sha256:ff8fa367d09b717b2a17a052544193ad76cd49979c805768879cb63d9ca50561"
             ],
-            "markers": "python_full_version >= '3.7.0'",
+            "markers": "python_version >= '3.7'",
             "version": "==3.3.2"
         },
         "cryptography": {
@@ -291,12 +289,11 @@
         },
         "kubernetes": {
             "hashes": [
-                "sha256:5854b0c508e8d217ca205591384ab58389abdae608576f9c9afc35a3c76a366c",
-                "sha256:e3db6800abf7e36c38d2629b5cb6b74d10988ee0cba6fba45595a7cbe60c0042"
+                "sha256:10f56f8160dcb73647f15fafda268e7f60cf7dbc9f8e46d52fcd46d3beb0c18d",
+                "sha256:1468069a573430fb1cb5ad22876868f57977930f80a6749405da31cd6086a7e9"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.6'",
-            "version": "==26.1.0"
+            "version": "==28.1.0"
         },
         "lockfile": {
             "hashes": [
@@ -557,7 +554,6 @@
                 "sha256:f8ecc1bba5667413457c529ab955bf8c67b45db799d159066261719e328580a0"
             ],
             "index": "pypi",
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
             "version": "==1.26.18"
         },
         "websocket-client": {

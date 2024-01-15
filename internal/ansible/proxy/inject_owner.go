@@ -45,7 +45,7 @@ type injectOwnerReferenceHandler struct {
 	restMapper        meta.RESTMapper
 	scheme            *runtime.Scheme
 	cache             cache.Cache
-	watchedNamespaces map[string]interface{}
+	watchedNamespaces map[string]cache.Config
 	apiResources      *apiResources
 }
 
