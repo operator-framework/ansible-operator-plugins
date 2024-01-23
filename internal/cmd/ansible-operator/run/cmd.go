@@ -24,9 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-logr/logr"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -149,29 +149,7 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 		options.NewClient = client.New
 	}
 
-	namespace, found := os.LookupEnv(k8sutil.WatchNamespaceEnvVar)
-	log = log.WithValues("Namespace", namespace)
-	var watchNamespaces []string
-	if found {
-		log.V(1).Info(fmt.Sprintf("Setting namespace with value in %s", k8sutil.WatchNamespaceEnvVar))
-		if namespace == metav1.NamespaceAll {
-			log.Info("Watching all namespaces.")
-			watchNamespaces = []string{metav1.NamespaceAll}
-		} else {
-			if strings.Contains(namespace, ",") {
-				log.Info("Watching multiple namespaces.")
-				watchNamespaces = strings.Split(namespace, ",")
-			} else {
-				log.Info("Watching single namespace.")
-				watchNamespaces = []string{namespace}
-			}
-		}
-		// TODO: remove this when loading from config file option is removed
-	} else if options.Cache.Namespaces == nil { //nolint:staticcheck
-		log.Info(fmt.Sprintf("Watch namespaces not configured by environment variable %s or file. "+
-			"Watching all namespaces.", k8sutil.WatchNamespaceEnvVar))
-		watchNamespaces = []string{metav1.NamespaceAll}
-	}
+	configureWatchNamespaces(&options, log)
 
 	err = setAnsibleEnvVars(f)
 	if err != nil {
@@ -179,11 +157,6 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 		os.Exit(1)
 	}
 
-	options.NewCache = func(config *rest.Config, opts cache.Options) (cache.Cache, error) {
-		return cache.New(config, cache.Options{
-			Namespaces: watchNamespaces,
-		})
-	}
 	// Create a new manager to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, options)
 	if err != nil {
@@ -262,7 +235,7 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 		RESTMapper:        mgr.GetRESTMapper(),
 		ControllerMap:     cMap,
 		OwnerInjection:    f.InjectOwnerRef,
-		WatchedNamespaces: strings.Split(namespace, ","),
+		WatchedNamespaces: options.Cache.DefaultNamespaces,
 	})
 	if err != nil {
 		log.Error(err, "Error starting proxy.")
@@ -365,4 +338,33 @@ func setAnsibleEnvVars(f *flags.Flags) error {
 			"value", f.AnsibleCollectionsPath)
 	}
 	return nil
+}
+
+func configureWatchNamespaces(options *manager.Options, log logr.Logger) {
+	namespaces := splitNamespaces(os.Getenv(k8sutil.WatchNamespaceEnvVar))
+
+	namespaceConfigs := make(map[string]cache.Config)
+	if len(namespaces) != 0 {
+		log.Info("Watching namespaces", "namespaces", namespaces)
+		for _, namespace := range namespaces {
+			namespaceConfigs[namespace] = cache.Config{}
+		}
+	} else {
+		log.Info("Watching all namespaces")
+		namespaceConfigs[metav1.NamespaceAll] = cache.Config{}
+	}
+
+	options.Cache.DefaultNamespaces = namespaceConfigs
+}
+
+func splitNamespaces(namespaces string) []string {
+	list := strings.Split(namespaces, ",")
+	var out []string
+	for _, ns := range list {
+		trimmed := strings.TrimSpace(ns)
+		if trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
 }

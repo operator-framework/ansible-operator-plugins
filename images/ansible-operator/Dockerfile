@@ -2,7 +2,7 @@
 # It is built with dependencies that take a while to download, thus speeding
 # up ansible deploy jobs.
 
-FROM registry.access.redhat.com/ubi8/ubi:8.8-1032 AS basebuilder
+FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 AS basebuilder
 
 # Install Rust so that we can ensure backwards compatibility with installing/building the cryptography wheel across all platforms
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -22,15 +22,15 @@ ENV PIP_NO_CACHE_DIR=1 \
 RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum update -y \
   && yum install -y libffi-devel openssl-devel python39-devel gcc python39-pip python39-setuptools \
-  && pip3 install --upgrade pip~=23.1.2 \
-  && pip3 install pipenv==2023.6.26 \
+  && pip3 install --upgrade pip~=23.3.2 \
+  && pip3 install pipenv==2023.11.15 \
   && pipenv install --deploy \
   && pipenv check \
   && yum remove -y gcc libffi-devel openssl-devel python39-devel \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-FROM registry.access.redhat.com/ubi8/ubi:8.8-1032 as base
+FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 as base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
@@ -46,8 +46,8 @@ RUN mkdir -p /etc/ansible \
 RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum update -y \
   && yum install -y python39-pip python39-setuptools \
-  && pip3 install --upgrade pip~=23.1.2 \
-  && pip3 install pipenv==2023.6.26 \
+  && pip3 install --upgrade pip~=23.3.2 \
+  && pip3 install pipenv==2023.11.15 \
   && yum clean all \
   && rm -rf /var/cache/yum
 

@@ -83,7 +83,7 @@ type Options struct {
 	Cache             cache.Cache
 	RESTMapper        meta.RESTMapper
 	ControllerMap     *controllermap.ControllerMap
-	WatchedNamespaces []string
+	WatchedNamespaces map[string]cache.Config
 	DisableCache      bool
 	OwnerInjection    bool
 	LogRequests       bool
@@ -105,12 +105,6 @@ func Run(done chan error, o Options) error {
 	}
 	if o.WatchedNamespaces == nil {
 		return fmt.Errorf("failed to get list of watched namespaces from options")
-	}
-
-	watchedNamespaceMap := make(map[string]interface{})
-	// Convert string list to map
-	for _, ns := range o.WatchedNamespaces {
-		watchedNamespaceMap[ns] = nil
 	}
 
 	// Create apiResources and
@@ -157,7 +151,7 @@ func Run(done chan error, o Options) error {
 			restMapper:        o.RESTMapper,
 			scheme:            o.Scheme,
 			cache:             o.Cache,
-			watchedNamespaces: watchedNamespaceMap,
+			watchedNamespaces: o.WatchedNamespaces,
 			apiResources:      resources,
 		}
 	} else {
@@ -176,7 +170,7 @@ func Run(done chan error, o Options) error {
 			scheme:            o.Scheme,
 			informerCache:     o.Cache,
 			restMapper:        o.RESTMapper,
-			watchedNamespaces: watchedNamespaceMap,
+			watchedNamespaces: o.WatchedNamespaces,
 			cMap:              o.ControllerMap,
 			injectOwnerRef:    o.OwnerInjection,
 			apiResources:      resources,

@@ -49,7 +49,7 @@ type cacheResponseHandler struct {
 	scheme            *runtime.Scheme
 	informerCache     cache.Cache
 	restMapper        meta.RESTMapper
-	watchedNamespaces map[string]interface{}
+	watchedNamespaces map[string]cache.Config
 	cMap              *controllermap.ControllerMap
 	injectOwnerRef    bool
 	apiResources      *apiResources

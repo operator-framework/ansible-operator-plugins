@@ -46,9 +46,7 @@ var _ = BeforeSuite(func() {
 	var err error
 	testMgr, err = manager.New(config.GetConfigOrDie(), manager.Options{
 		Cache: cache.Options{
-			Namespaces: []string{
-				"default",
-			},
+			DefaultNamespaces: map[string]cache.Config{"default": {}},
 		},
 	})
 	if err != nil {
@@ -63,7 +61,7 @@ var _ = BeforeSuite(func() {
 		Cache:             nil,
 		RESTMapper:        testMgr.GetRESTMapper(),
 		ControllerMap:     cMap,
-		WatchedNamespaces: []string{"test-watched-namespace"},
+		WatchedNamespaces: map[string]cache.Config{"test-watched-namespace": {}},
 		OwnerInjection:    true,
 	})
 	if err != nil {
