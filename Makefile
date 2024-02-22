@@ -10,7 +10,6 @@ export SIMPLE_VERSION := $(shell (test "$(shell git describe --tags)" = "$(shell
 export GIT_VERSION := $(shell git describe --dirty --tags --always)
 export GIT_COMMIT := $(shell git rev-parse HEAD)
 export K8S_VERSION = 1.28.0
-export ENVTEST_VERSION = 1.28.x
 
 # Build settings
 export TOOLS_DIR = tools/bin
@@ -37,14 +36,15 @@ export PATH := $(PWD)/$(BUILD_DIR):$(PWD)/$(TOOLS_DIR):$(PATH)
 export IMAGE_REPO ?= quay.io/operator-framework/ansible-operator
 export IMAGE_TAG ?= dev
 
+# bingo manages consistent tooling versions for things like setup-envtest, goreleaser, kind, etc.
+include .bingo/Variables.mk
+
 # This is to allow for building and testing on Apple Silicon.
 # These values default to the host's GOOS and GOARCH, but should
 # be overridden when running builds and tests on Apple Silicon unless
 # you are only building the binary
 BUILD_GOOS ?= $(shell go env GOOS)
 BUILD_GOARCH ?= $(shell go env GOARCH)
-
-ENVTEST ?= $(LOCALBIN)/setup-envtest
 
 ##@ Development
 
@@ -133,14 +133,10 @@ test-docs: ## Test doc links
 	./hack/check-links.sh
 
 .PHONY: test-unit
+ENVTEST_VERSION = $(shell go list -m k8s.io/client-go | cut -d" " -f2 | sed 's/^v0\.\([[:digit:]]\{1,\}\)\.[[:digit:]]\{1,\}$$/1.\1.x/')
 TEST_PKGS = $(shell go list ./... | grep -v -E 'github.com/operator-framework/ansible-operator-plugins/test/')
-test-unit: envtest ## Run unit tests
-	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_VERSION) -p path)" go test -coverprofile=coverage.out -covermode=count -short $(TEST_PKGS)
-
-.PHONY: envtest
-envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
-$(ENVTEST): $(LOCALBIN)
-	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+test-unit: $(SETUP_ENVTEST) ## Run unit tests
+	KUBEBUILDER_ASSETS="$(shell $(SETUP_ENVTEST) use $(ENVTEST_VERSION) -p path)" go test -coverprofile=coverage.out -covermode=count -short $(TEST_PKGS)
 
 e2e_tests := test-e2e-ansible test-e2e-ansible-molecule
 e2e_targets := test-e2e $(e2e_tests)
@@ -153,18 +149,16 @@ test-e2e-setup:: build dev-install cluster-create
 
 .PHONY: cluster-create
 cluster-create::
-	[[ "`$(TOOLS_DIR)/kind get clusters`" =~ "$(KIND_CLUSTER)" ]] || $(TOOLS_DIR)/kind create cluster --image="kindest/node:v$(K8S_VERSION)" --name $(KIND_CLUSTER)
-	$(TOOLS_DIR)/kind export kubeconfig --name $(KIND_CLUSTER)
+	[[ "`$(KIND) get clusters`" =~ "$(KIND_CLUSTER)" ]] || $(KIND) create cluster --image="kindest/node:v$(K8S_VERSION)" --name $(KIND_CLUSTER)
+	$(KIND) export kubeconfig --name $(KIND_CLUSTER)
 
 .PHONY: dev-install
 dev-install::
-	$(SCRIPTS_DIR)/fetch kind 0.20.0
 	$(SCRIPTS_DIR)/fetch kubectl $(K8S_VERSION) # Install kubectl AFTER envtest because envtest includes its own kubectl binary
 
 .PHONY: test-e2e-teardown
 test-e2e-teardown:
-	$(SCRIPTS_DIR)/fetch kind 0.20.0
-	$(TOOLS_DIR)/kind delete cluster --name $(KIND_CLUSTER)
+	$(KIND) delete cluster --name $(KIND_CLUSTER)
 	rm -f $(KUBECONFIG)
 
 # Double colon rules allow repeated rule declarations.
@@ -183,14 +177,9 @@ LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
-GORELEASER := $(abspath $(LOCALBIN)/goreleaser)
-GORELEASER_VERSION       ?= v1.16.2
-goreleaser: $(LOCALBIN) ## Build a local copy of goreleaser
-	GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
-
 export ENABLE_RELEASE_PIPELINE ?= false
 export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
-release: goreleaser ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
+release: $(GORELEASER) ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
 
 .DEFAULT_GOAL := help
