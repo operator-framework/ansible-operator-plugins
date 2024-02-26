@@ -142,7 +142,7 @@ export KIND_CLUSTER := osdk-test
 test-e2e-setup:: build dev-install cluster-create
 
 .PHONY: cluster-create
-cluster-create::
+cluster-create:: $(KIND)
 	[[ "`$(KIND) get clusters`" =~ "$(KIND_CLUSTER)" ]] || $(KIND) create cluster --image="kindest/node:v$(K8S_VERSION)" --name $(KIND_CLUSTER)
 	$(KIND) export kubeconfig --name $(KIND_CLUSTER)
 
@@ -151,7 +151,7 @@ dev-install::
 	$(SCRIPTS_DIR)/fetch kubectl $(K8S_VERSION) # Install kubectl AFTER envtest because envtest includes its own kubectl binary
 
 .PHONY: test-e2e-teardown
-test-e2e-teardown:
+test-e2e-teardown: $(KIND)
 	$(KIND) delete cluster --name $(KIND_CLUSTER)
 	rm -f $(KUBECONFIG)
 
