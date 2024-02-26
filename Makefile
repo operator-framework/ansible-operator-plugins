@@ -59,15 +59,15 @@ fix: ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
 	make setup-lint
-	$(TOOLS_DIR)/golangci-lint run --fix --timeout=5m
+	$(GOLANGCI_LINT) run --fix --timeout=5m
 
 .PHONY: setup-lint
 setup-lint: ## Setup the lint
-	$(SCRIPTS_DIR)/fetch golangci-lint 1.55.2
+	$(GOLANGCI_LINT)
 
 .PHONY: lint
 lint: setup-lint ## Run the lint check
-	$(TOOLS_DIR)/golangci-lint run
+	$(GOLANGCI_LINT) run
 
 .PHONY: clean
 clean: ## Cleanup build artifacts and tool binaries.
