@@ -55,18 +55,13 @@ generate: build # Generate CLI docs and samples
 	go generate ./...
 
 .PHONY: fix
-fix: ## Fixup files in the repo.
+fix: $(GOLANGCI_LINT) ## Fixup files in the repo.
 	go mod tidy
 	go fmt ./...
-	make setup-lint
 	$(GOLANGCI_LINT) run --fix --timeout=5m
 
-.PHONY: setup-lint
-setup-lint: ## Setup the lint
-	$(GOLANGCI_LINT)
-
 .PHONY: lint
-lint: setup-lint ## Run the lint check
+lint: $(GOLANGCI_LINT) ## Run the lint check
 	$(GOLANGCI_LINT) run
 
 .PHONY: clean
@@ -122,7 +117,6 @@ test-sanity: generate fix ## Test repo formatting, linting, etc.
 	./hack/check-license.sh
 	./hack/check-error-log-msg-format.sh
 	go vet ./...
-	make setup-lint
 	make lint
 	git diff --exit-code # diff again to ensure other checks don't change repo
 
