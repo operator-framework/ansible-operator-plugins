@@ -18,23 +18,9 @@ fetch() {
   local ver_cmd=""
   local fetch_cmd=""
   case "$tool" in
-    "golangci-lint")
-      ver_cmd="${DEST}/golangci-lint --version 2>/dev/null | cut -d' ' -f4"
-      fetch_cmd="curl -sSfL \"https://raw.githubusercontent.com/golangci/golangci-lint/v${ver}/install.sh\" | sh -s -- -b \"${DEST}\" \"v${ver}\""
-      ;;
-    "kind")
-      ver_cmd="${DEST}/kind --version 2>/dev/null | cut -d' ' -f3"
-      fetch_cmd="(curl -sSfLo '${DEST}/kind' 'https://kind.sigs.k8s.io/dl/v${ver}/kind-${os}-${arch}' && chmod +x ${DEST}/kind)"
-      ;;
     "kubectl")
       ver_cmd="${DEST}/kubectl version 2>/dev/null | grep Client | cut -d' ' -f5 | sed 's/\w\+:\"v\(.*\)\",/\1/'"
       fetch_cmd="(curl -sSfLo '${DEST}/kubectl' 'https://storage.googleapis.com/kubernetes-release/release/v${ver}/bin/${os}/${arch}/kubectl' && chmod +x ${DEST}/kubectl)"
-      ;;
-    "goreleaser")
-      ver_cmd="${DEST}/goreleaser --version 2>/dev/null | grep version | cut -d' ' -f3"
-      osCap="$(uname -s)"
-      archBase="$(uname -m)"
-      fetch_cmd="(curl -sSfLo '${DEST}/goreleaser.tar.gz' 'https://github.com/goreleaser/goreleaser/releases/download/v${ver}/goreleaser_${osCap}_${archBase}.tar.gz' && tar -xf $DEST/goreleaser.tar.gz -C $DEST)"
       ;;
     *)
       echo "unknown tool $tool"
