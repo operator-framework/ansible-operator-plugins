@@ -62,26 +62,17 @@ func RemoveKustomizeCRDManifests() error {
 func UpdateKustomizationsInit() error {
 
 	defaultKFile := filepath.Join("config", "default", "kustomization.yaml")
-	if err := kbutil.ReplaceInFile(defaultKFile,
-		`
-# [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
-# crd/kustomization.yaml
-#- ../webhook
-# [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER'. 'WEBHOOK' components are required.
-#- ../certmanager`, ""); err != nil {
-		return fmt.Errorf("remove %s resources: %v", defaultKFile, err)
-	}
 
 	if err := kbutil.ReplaceInFile(defaultKFile,
 		`
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
 # crd/kustomization.yaml
-#- manager_webhook_patch.yaml
+#- path: manager_webhook_patch.yaml
 
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER'.
 # Uncomment 'CERTMANAGER' sections in crd/kustomization.yaml to enable the CA injection in the admission webhooks.
 # 'CERTMANAGER' needs to be enabled to use ca injection
-#- webhookcainjection_patch.yaml
+#- path: webhookcainjection_patch.yaml
 
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER' prefix.
 # Uncomment the following replacements to add the cert-manager CA injection annotations
