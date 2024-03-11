@@ -170,6 +170,7 @@ func (r *AnsibleOperatorReconciler) Reconcile(ctx context.Context, request recon
 	// iterate events from ansible, looking for the final one
 	statusEvent := eventapi.StatusJobEvent{}
 	failureMessages := eventapi.FailureMessages{}
+
 	for event := range result.Events() {
 		for _, eHandler := range r.EventHandlers {
 			go eHandler.Handle(ident, u, event)
@@ -187,24 +188,25 @@ func (r *AnsibleOperatorReconciler) Reconcile(ctx context.Context, request recon
 				return reconcile.Result{}, err
 			}
 		}
-		if module, found := event.EventData["task_action"]; found {
-			if module == "operator_sdk.util.requeue_after" || module == "requeue_after" && event.Event != eventapi.EventRunnerOnFailed {
-				if data, exists := event.EventData["res"]; exists {
-					if fields, check := data.(map[string]interface{}); check {
-						requeueDuration, err := time.ParseDuration(fields["period"].(string))
-						if err != nil {
-							logger.Error(err, "Unable to parse time input")
-							return reconcileResult, err
+		if event.Event == eventapi.EventRunnerOnFailed && !event.IgnoreError() && !event.Rescued() {
+			failureMessages = append(failureMessages, event.GetFailedPlaybookMessage())
+		} else {
+			if module, found := event.EventData["task_action"]; found {
+				if module == "operator_sdk.util.requeue_after" || module == "requeue_after" && event.Event != eventapi.EventRunnerOnFailed {
+					if data, exists := event.EventData["res"]; exists {
+						if fields, check := data.(map[string]interface{}); check {
+							requeueDuration, err := time.ParseDuration(fields["period"].(string))
+							if err != nil {
+								logger.Error(err, "Unable to parse time input")
+								return reconcileResult, err
+							}
+							reconcileResult.RequeueAfter = requeueDuration
+							logger.Info(fmt.Sprintf("Set the reconciliation to occur after %s", requeueDuration))
+							return reconcileResult, nil
 						}
-						reconcileResult.RequeueAfter = requeueDuration
-						logger.Info(fmt.Sprintf("Set the reconciliation to occur after %s", requeueDuration))
-						return reconcileResult, nil
 					}
 				}
 			}
-		}
-		if event.Event == eventapi.EventRunnerOnFailed && !event.IgnoreError() && !event.Rescued() {
-			failureMessages = append(failureMessages, event.GetFailedPlaybookMessage())
 		}
 	}
 
@@ -239,11 +241,10 @@ func (r *AnsibleOperatorReconciler) Reconcile(ctx context.Context, request recon
 		return reconcile.Result{}, err
 	}
 
+	recentlyDeleted := u.GetDeletionTimestamp() != nil
 	// We only want to update the CustomResource once, so we'll track changes
 	// and do it at the end
 	runSuccessful := len(failureMessages) == 0
-
-	recentlyDeleted := u.GetDeletionTimestamp() != nil
 
 	// The finalizer has run successfully, time to remove it
 	if deleted && finalizerExists && runSuccessful {
