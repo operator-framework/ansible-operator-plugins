@@ -51,6 +51,7 @@ type Options struct {
 	WatchDependentResources     bool
 	WatchClusterScopedResources bool
 	WatchAnnotationsChanges     bool
+	WatchAnyChanges             bool
 	MaxConcurrentReconciles     int
 	Selector                    metav1.LabelSelector
 }
@@ -74,6 +75,7 @@ func Add(mgr manager.Manager, options Options) *controller.Controller {
 		AnsibleDebugLogs:        options.AnsibleDebugLogs,
 		APIReader:               mgr.GetAPIReader(),
 		WatchAnnotationsChanges: options.WatchAnnotationsChanges,
+		WatchAnyChanges:         options.WatchAnyChanges,
 	}
 
 	scheme := mgr.GetScheme()
@@ -101,16 +103,20 @@ func Add(mgr manager.Manager, options Options) *controller.Controller {
 		os.Exit(1)
 	}
 
-	// Set up predicates.
-	predicates := []ctrlpredicate.Predicate{
-		ctrlpredicate.Or(ctrlpredicate.GenerationChangedPredicate{}, libpredicate.NoGenerationPredicate{}),
-	}
+	predicates := []ctrlpredicate.Predicate{}
+	var mainPredicate ctrlpredicate.Predicate
 
-	if options.WatchAnnotationsChanges {
-		predicates = []ctrlpredicate.Predicate{
-			ctrlpredicate.Or(ctrlpredicate.AnnotationChangedPredicate{}, predicates[0]),
+	if options.WatchAnyChanges {
+		mainPredicate = ctrlpredicate.ResourceVersionChangedPredicate{}
+	} else {
+		// Set up predicates.
+		mainPredicate = ctrlpredicate.Or(ctrlpredicate.GenerationChangedPredicate{}, libpredicate.NoGenerationPredicate{})
+		if options.WatchAnnotationsChanges {
+			mainPredicate = ctrlpredicate.Or(mainPredicate, ctrlpredicate.AnnotationChangedPredicate{})
 		}
 	}
+
+	predicates = append(predicates, mainPredicate)
 
 	p, err := parsePredicateSelector(options.Selector)
 

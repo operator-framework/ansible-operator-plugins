@@ -203,6 +203,7 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 			Selector:                w.Selector,
 			LoggingLevel:            getAnsibleEventsToLog(f),
 			WatchAnnotationsChanges: w.WatchAnnotationsChanges,
+			WatchAnyChanges:         w.WatchAnyChanges,
 		})
 		if ctr == nil {
 			log.Error(fmt.Errorf("failed to add controller for GVK %v", w.GroupVersionKind.String()), "")
