@@ -366,6 +366,7 @@ func (r *runner) makeParameters(u *unstructured.Unstructured) map[string]interfa
 	specKey := fmt.Sprintf("%s_spec", objKey)
 	parameters[specKey] = spec
 	if r.markUnsafe {
+		parameters[objKey] = markUnsafe(u.Object)
 		parameters[specKey] = markUnsafe(spec)
 	}
 
