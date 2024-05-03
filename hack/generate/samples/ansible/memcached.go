@@ -82,7 +82,7 @@ func addingAnsibleTask(dir string, gvk schema.GroupVersionKind) {
 // Makefile to the version specified
 func replaceKustomizeVersion(dir string, version string) {
 	err := kbutil.ReplaceInFile(filepath.Join(dir, "Makefile"),
-		"curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.1.1/kustomize_v5.1.1_$(OS)_$(ARCH).tar.gz | \\",
+		"curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.3.0/kustomize_v5.3.0_$(OS)_$(ARCH).tar.gz | \\",
 		fmt.Sprintf("curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/%s/kustomize_%s_$(OS)_$(ARCH).tar.gz | \\", version, version))
 	pkg.CheckError(fmt.Sprintf("replacing kustomize version to %s", version), err)
 }

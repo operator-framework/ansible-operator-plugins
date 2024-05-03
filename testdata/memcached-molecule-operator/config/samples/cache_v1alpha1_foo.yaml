@@ -2,11 +2,8 @@ apiVersion: cache.example.com/v1alpha1
 kind: Foo
 metadata:
   labels:
-    app.kubernetes.io/name: foo
-    app.kubernetes.io/instance: foo-sample
-    app.kubernetes.io/part-of: memcached-molecule-operator
+    app.kubernetes.io/name: memcached-molecule-operator
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: memcached-molecule-operator
   name: foo-sample
 spec:
   foo: bar
