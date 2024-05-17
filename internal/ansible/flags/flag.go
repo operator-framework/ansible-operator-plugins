@@ -49,10 +49,6 @@ type Flags struct {
 	EnableHTTP2                bool
 	SecureMetrics              bool
 
-	// Path to a controller-runtime componentconfig file.
-	// If this is empty, use default values.
-	ManagerConfigPath string
-
 	// If not nil, used to deduce which flags were set in the CLI.
 	flagSet *pflag.FlagSet
 }
@@ -112,14 +108,6 @@ func (f *Flags) AddTo(flagSet *pflag.FlagSet) {
 		"Maximum number of concurrent reconciles for controllers. Overridden by environment variable.",
 	)
 
-	// Controller manager flags.
-	flagSet.StringVar(&f.ManagerConfigPath,
-		"config",
-		"",
-		"The controller will load its initial configuration from this file. "+
-			"Omit this flag to use the default configuration values. "+
-			"Command-line flags override configuration from this file.",
-	)
 	// TODO(2.0.0): remove
 	flagSet.StringVar(&f.MetricsBindAddress,
 		"metrics-addr",
