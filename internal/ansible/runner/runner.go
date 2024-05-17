@@ -294,7 +294,6 @@ func (r *runner) Run(ident string, u *unstructured.Unstructured, kubeconfig stri
 		if err = os.Symlink(currentRun, latestArtifacts); err != nil {
 			logger.Error(err, "Error symlinking latest artifacts")
 		}
-
 	}()
 
 	return &runResult{

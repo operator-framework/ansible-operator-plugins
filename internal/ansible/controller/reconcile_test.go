@@ -82,7 +82,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus:    true,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
@@ -152,7 +152,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus: true,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventRunnerOnFailed,
 						Created: eventapi.EventTime{Time: eventTime},
 						EventData: map[string]interface{}{
@@ -161,7 +161,7 @@ func TestReconcile(t *testing.T) {
 							},
 						},
 					},
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
@@ -230,7 +230,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus: false,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventRunnerOnFailed,
 						Created: eventapi.EventTime{Time: eventTime},
 						EventData: map[string]interface{}{
@@ -239,7 +239,7 @@ func TestReconcile(t *testing.T) {
 							},
 						},
 					},
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
@@ -271,7 +271,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus:    true,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
@@ -353,7 +353,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus:    true,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
@@ -408,7 +408,7 @@ func TestReconcile(t *testing.T) {
 			ReconcilePeriod: 5 * time.Second,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Created: eventapi.EventTime{Time: eventTime},
 					},
 				},
@@ -458,7 +458,7 @@ func TestReconcile(t *testing.T) {
 			ManageStatus:    false,
 			Runner: &fake.Runner{
 				JobEvents: []eventapi.JobEvent{
-					eventapi.JobEvent{
+					{
 						Event:   eventapi.EventPlaybookOnStats,
 						Created: eventapi.EventTime{Time: eventTime},
 					},
