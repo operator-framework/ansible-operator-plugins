@@ -2,11 +2,8 @@ apiVersion: cache.example.com/v1alpha1
 kind: Memfin
 metadata:
   labels:
-    app.kubernetes.io/name: memfin
-    app.kubernetes.io/instance: memfin-sample
-    app.kubernetes.io/part-of: memcached-molecule-operator
+    app.kubernetes.io/name: memcached-molecule-operator
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: memcached-molecule-operator
   name: memfin-sample
 spec:
   foo: bar

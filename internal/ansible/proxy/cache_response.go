@@ -75,7 +75,7 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		}
 
 		if c.restMapper == nil {
-			c.restMapper = meta.NewDefaultRESTMapper([]schema.GroupVersion{schema.GroupVersion{
+			c.restMapper = meta.NewDefaultRESTMapper([]schema.GroupVersion{{
 				Group:   r.APIGroup,
 				Version: r.APIVersion,
 			}})
@@ -153,7 +153,6 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 // skipCacheLookup - determine if we should skip the cache lookup
 func (c *cacheResponseHandler) skipCacheLookup(r *k8sRequest.RequestInfo, gvk schema.GroupVersionKind,
 	req *http.Request) bool {
-
 	skip := matchesRegexp(req.URL.String(), c.skipPathRegexp)
 	if skip {
 		return true

@@ -22,6 +22,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	kbtutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
 
@@ -111,9 +112,9 @@ var _ = Describe("Running ansible projects", func() {
 				return logOutput
 			}
 			Eventually(managerContainerLogs, time.Minute, time.Second).Should(ContainSubstring(
-				"Ansible-runner exited successfully"))
-			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("failed=1"))
-			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("[Gathering Facts]"))
+				"Ansible-runner exited successfully"), "manager logs: %s", managerContainerLogs())
+			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("failed=1"), "manager logs: %s", managerContainerLogs())
+			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("[Gathering Facts]"), "manager logs: %s", managerContainerLogs())
 
 			By("ensuring no liveness probe fail events")
 			verifyControllerProbe := func() string {

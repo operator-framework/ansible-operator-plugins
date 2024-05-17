@@ -69,7 +69,6 @@ func NewGenericCommandContext(opts ...GenericCommandContextOptions) *GenericComm
 
 // Run runs a given command and will append any extra paths to the configured directory
 func (gcc *GenericCommandContext) Run(cmd *exec.Cmd, path ...string) ([]byte, error) {
-
 	dir := strings.Join(append([]string{gcc.dir}, path...), "/")
 	// make the directory if it does not already exist
 	if dir != "" {

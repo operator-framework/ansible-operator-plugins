@@ -70,15 +70,17 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 		"size: 3")
 	pkg.CheckError("updating spec of inventorytest sample", err)
 
+	log.Info("enabling metrics in the manager")
+	err = kbutil.UncommentCode(
+		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
+		"#- path: manager_metrics_patch.yaml", "#")
+	pkg.CheckError("enabling metrics endpoint", err)
+
 	removeFixmeFromPlaybooks(sample.Dir(), sample.GVKs())
 	updatePlaybooks(sample.Dir())
 	addMocksFromTestdata(sample.Dir(), sample.CommandContext())
 	updateDockerfile(sample.Dir())
 	updateConfig(sample.Dir())
-
-	// Replace kustomize version to v5.2.1 to enable running the
-	// tests on a mac with Apple Silicon
-	replaceKustomizeVersion(sample.Dir(), "v5.2.1")
 }
 
 func updateConfig(dir string) {
@@ -120,7 +122,7 @@ func updateConfig(dir string) {
 
 	log.Info("adding manager arg")
 	const ansibleVaultArg = `
-        - --ansible-args='--vault-password-file /opt/ansible/pwd.yml'`
+          - --ansible-args='--vault-password-file /opt/ansible/pwd.yml'`
 	err = kbutil.InsertCode(
 		filepath.Join(dir, "config", "manager", "manager.yaml"),
 		"- --leader-election-id=advanced-molecule-operator",
@@ -143,7 +145,7 @@ func updateConfig(dir string) {
 	const managerAuthArgs = `
         - "--ansible-args='--vault-password-file /opt/ansible/pwd.yml'"`
 	err = kbutil.InsertCode(
-		filepath.Join(dir, "config", "default", "manager_auth_proxy_patch.yaml"),
+		filepath.Join(dir, "config", "default", "manager_metrics_patch.yaml"),
 		"- \"--leader-elect\"",
 		managerAuthArgs)
 	pkg.CheckError("adding vaulting args to the proxy auth", err)
@@ -198,7 +200,6 @@ func addMocksFromTestdata(dir string, cc command.CommandContext) {
 	cmd = exec.Command("cp", filepath.Join(testDataAbsPath, "/playbooks/finalizerconcurrencyfinalizer.yml"), filepath.Join(dir, "playbooks/finalizerconcurrencyfinalizer.yml"))
 	_, err = cc.Run(cmd)
 	pkg.CheckError("adding finalizer for finalizerconccurencytest", err)
-
 }
 
 func updateDockerfile(dir string) {

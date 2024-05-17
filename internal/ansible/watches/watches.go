@@ -499,5 +499,4 @@ func getIntegerEnvMaxReconcile(envVarMaxWorker, envVarMaxReconciler string, defV
 		}
 	}
 	return val
-
 }
