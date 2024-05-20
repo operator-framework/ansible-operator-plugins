@@ -21,14 +21,12 @@ import (
 	"os"
 	"path/filepath"
 
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
-
 	log "github.com/sirupsen/logrus"
+	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
 )
 
 // RemoveKustomizeCRDManifests removes items in config/crd relating to CRD conversion webhooks.
 func RemoveKustomizeCRDManifests() error {
-
 	pathsToRemove := []string{
 		filepath.Join("config", "crd", "kustomizeconfig.yaml"),
 	}
@@ -60,7 +58,6 @@ func RemoveKustomizeCRDManifests() error {
 // UpdateKustomizationsInit updates certain parts of or removes entire kustomization.yaml files
 // that are either not used by certain Init plugins or are created by preceding Init plugins.
 func UpdateKustomizationsInit() error {
-
 	defaultKFile := filepath.Join("config", "default", "kustomization.yaml")
 	if err := kbutil.ReplaceInFile(defaultKFile,
 		`
@@ -76,12 +73,12 @@ func UpdateKustomizationsInit() error {
 		`
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
 # crd/kustomization.yaml
-#- manager_webhook_patch.yaml
+#- path: manager_webhook_patch.yaml
 
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER'.
 # Uncomment 'CERTMANAGER' sections in crd/kustomization.yaml to enable the CA injection in the admission webhooks.
 # 'CERTMANAGER' needs to be enabled to use ca injection
-#- webhookcainjection_patch.yaml
+#- path: webhookcainjection_patch.yaml
 
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER' prefix.
 # Uncomment the following replacements to add the cert-manager CA injection annotations
@@ -192,7 +189,6 @@ func UpdateKustomizationsInit() error {
 // UpdateKustomizationsCreateAPI updates certain parts of or removes entire kustomization.yaml files
 // that are either not used by certain CreateAPI plugins or are created by preceding CreateAPI plugins.
 func UpdateKustomizationsCreateAPI() error {
-
 	crdKFile := filepath.Join("config", "crd", "kustomization.yaml")
 	if crdKBytes, err := os.ReadFile(crdKFile); err != nil && !errors.Is(err, os.ErrNotExist) {
 		log.Debugf("Error reading kustomization for substitution: %v", err)

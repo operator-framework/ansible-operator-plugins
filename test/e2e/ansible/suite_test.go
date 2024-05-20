@@ -24,10 +24,10 @@ import (
 	"testing"
 	"time"
 
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
 
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/ansible"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
@@ -79,7 +79,7 @@ var _ = BeforeSuite(func() {
 	// ---------------------------------------------------
 
 	By("enabling debug logging in the manager")
-	err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "config", "default", "manager_auth_proxy_patch.yaml"),
+	err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "config", "default", "manager_metrics_patch.yaml"),
 		"- \"--leader-elect\"", "- \"--zap-log-level=2\"\n        - \"--leader-elect\"")
 	Expect(err).NotTo(HaveOccurred())
 

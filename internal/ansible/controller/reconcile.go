@@ -293,7 +293,6 @@ func (r *AnsibleOperatorReconciler) printAnsibleResult(result runner.RunResult, 
 }
 
 func (r *AnsibleOperatorReconciler) markRunning(ctx context.Context, nn types.NamespacedName, u *unstructured.Unstructured) error {
-
 	// Get the latest resource to prevent updating a stale status.
 	if err := r.APIReader.Get(ctx, nn, u); err != nil {
 		return err
@@ -326,7 +325,6 @@ func (r *AnsibleOperatorReconciler) markRunning(ctx context.Context, nn types.Na
 // i.e Annotations that could be incorrect
 func (r *AnsibleOperatorReconciler) markError(ctx context.Context, nn types.NamespacedName, u *unstructured.Unstructured,
 	failureMessage string) error {
-
 	logger := logf.Log.WithName("markError")
 	// Immediately update metrics with failed reconciliation, since Get()
 	// may fail.
@@ -368,7 +366,6 @@ func (r *AnsibleOperatorReconciler) markError(ctx context.Context, nn types.Name
 
 func (r *AnsibleOperatorReconciler) markDone(ctx context.Context, nn types.NamespacedName, u *unstructured.Unstructured,
 	statusEvent eventapi.StatusJobEvent, failureMessages eventapi.FailureMessages) error {
-
 	logger := logf.Log.WithName("markDone")
 	// Get the latest resource to prevent updating a stale status.
 	if err := r.APIReader.Get(ctx, nn, u); err != nil {

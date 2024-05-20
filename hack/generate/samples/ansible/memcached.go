@@ -40,10 +40,6 @@ func ImplementMemcached(sample sample.Sample, image string) {
 			addingMoleculeMockData(sample.Dir(), sample.Name(), gvk)
 		}
 	}
-
-	// Replace kustomize version to v5.2.1 to enable running the
-	// tests on a mac with Apple Silicon
-	replaceKustomizeVersion(sample.Dir(), "v5.2.1")
 }
 
 // addingMoleculeMockData will customize the molecule data
@@ -76,13 +72,4 @@ func addingAnsibleTask(dir string, gvk schema.GroupVersionKind) {
 		fmt.Sprintf("%s_%s_%s.yaml", gvk.Group, gvk.Version, strings.ToLower(gvk.Kind))),
 		"# TODO(user): Add fields here", "size: 1")
 	pkg.CheckError("updating sample CR", err)
-}
-
-// replaceKustomizeVersion will replace the kustomize version used in the
-// Makefile to the version specified
-func replaceKustomizeVersion(dir string, version string) {
-	err := kbutil.ReplaceInFile(filepath.Join(dir, "Makefile"),
-		"curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.1.1/kustomize_v5.1.1_$(OS)_$(ARCH).tar.gz | \\",
-		fmt.Sprintf("curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/%s/kustomize_%s_$(OS)_$(ARCH).tar.gz | \\", version, version))
-	pkg.CheckError(fmt.Sprintf("replacing kustomize version to %s", version), err)
 }
