@@ -40,10 +40,6 @@ func ImplementMemcached(sample sample.Sample, image string) {
 			addingMoleculeMockData(sample.Dir(), sample.Name(), gvk)
 		}
 	}
-
-	// Replace kustomize version to v5.2.1 to enable running the
-	// tests on a mac with Apple Silicon
-	replaceKustomizeVersion(sample.Dir(), "v5.2.1")
 }
 
 // addingMoleculeMockData will customize the molecule data
