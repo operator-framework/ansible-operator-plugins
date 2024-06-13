@@ -75,10 +75,6 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 	addMocksFromTestdata(sample.Dir(), sample.CommandContext())
 	updateDockerfile(sample.Dir())
 	updateConfig(sample.Dir())
-
-	// Replace kustomize version to v5.2.1 to enable running the
-	// tests on a mac with Apple Silicon
-	replaceKustomizeVersion(sample.Dir(), "v5.2.1")
 }
 
 func updateConfig(dir string) {
