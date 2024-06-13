@@ -25,7 +25,12 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
   && pipenv install --deploy \
-  && pipenv check \
+  # NOTE: This ignored vulnerability (70612) was detected in jinja2, \
+  # but the vulnerability is disputed and may never be fixed. See: \
+  #  - https://github.com/advisories/GHSA-f6pv-j8mr-w6rr \
+  #  - https://github.com/dbt-labs/dbt-core/issues/10250 \
+  #  - https://data.safetycli.com/v/70612/97c/ \
+  && pipenv check --ignore 70612 \
   && yum remove -y gcc libffi-devel openssl-devel python39-devel \
   && yum clean all \
   && rm -rf /var/cache/yum
