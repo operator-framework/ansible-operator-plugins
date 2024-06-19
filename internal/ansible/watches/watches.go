@@ -52,6 +52,7 @@ type Watch struct {
 	WatchClusterScopedResources bool                      `yaml:"watchClusterScopedResources"`
 	SnakeCaseParameters         bool                      `yaml:"snakeCaseParameters"`
 	WatchAnnotationsChanges     bool                      `yaml:"watchAnnotationsChanges"`
+	WatchAnyChanges             bool                      `yaml:"watchAnyChanges"`
 	MarkUnsafe                  bool                      `yaml:"markUnsafe"`
 	Selector                    metav1.LabelSelector      `yaml:"selector"`
 
@@ -78,6 +79,7 @@ var (
 	watchClusterScopedResourcesDefault = false
 	snakeCaseParametersDefault         = true
 	watchAnnotationsChangesDefault     = false
+	watchAnyChangesDefault             = false
 	markUnsafeDefault                  = false
 	selectorDefault                    = metav1.LabelSelector{}
 
@@ -101,6 +103,7 @@ type alias struct {
 	WatchClusterScopedResources *bool                     `yaml:"watchClusterScopedResources,omitempty"`
 	SnakeCaseParameters         *bool                     `yaml:"snakeCaseParameters"`
 	WatchAnnotationsChanges     *bool                     `yaml:"watchAnnotationsChanges"`
+	WatchAnyChanges             *bool                     `yaml:"watchAnyChanges"`
 	MarkUnsafe                  *bool                     `yaml:"markUnsafe"`
 	Blacklist                   []schema.GroupVersionKind `yaml:"blacklist,omitempty"`
 	Finalizer                   *Finalizer                `yaml:"finalizer"`
@@ -141,6 +144,10 @@ func (w *Watch) setValuesFromAlias(tmp alias) error {
 		tmp.WatchAnnotationsChanges = &watchAnnotationsChangesDefault
 	}
 
+	if tmp.WatchAnyChanges == nil {
+		tmp.WatchAnyChanges = &watchAnyChangesDefault
+	}
+
 	if tmp.MarkUnsafe == nil {
 		tmp.MarkUnsafe = &markUnsafeDefault
 	}
@@ -167,6 +174,7 @@ func (w *Watch) setValuesFromAlias(tmp alias) error {
 	w.WatchDependentResources = *tmp.WatchDependentResources
 	w.SnakeCaseParameters = *tmp.SnakeCaseParameters
 	w.WatchAnnotationsChanges = *tmp.WatchAnnotationsChanges
+	w.WatchAnyChanges = *tmp.WatchAnyChanges
 	w.MarkUnsafe = *tmp.MarkUnsafe
 	w.WatchClusterScopedResources = *tmp.WatchClusterScopedResources
 	w.Finalizer = tmp.Finalizer
@@ -302,6 +310,7 @@ func New(gvk schema.GroupVersionKind, role, playbook string, vars map[string]int
 		WatchClusterScopedResources: watchClusterScopedResourcesDefault,
 		SnakeCaseParameters:         snakeCaseParametersDefault,
 		WatchAnnotationsChanges:     watchAnnotationsChangesDefault,
+		WatchAnyChanges:             watchAnyChangesDefault,
 		MarkUnsafe:                  markUnsafeDefault,
 		Finalizer:                   finalizer,
 		AnsibleVerbosity:            ansibleVerbosityDefault,

@@ -62,6 +62,7 @@ type AnsibleOperatorReconciler struct {
 	ManageStatus            bool
 	AnsibleDebugLogs        bool
 	WatchAnnotationsChanges bool
+	WatchAnyChanges         bool
 }
 
 // Reconcile - handle the event.
