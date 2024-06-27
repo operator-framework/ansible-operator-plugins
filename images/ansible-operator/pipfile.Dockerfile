@@ -26,7 +26,10 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   #  - https://github.com/advisories/GHSA-f6pv-j8mr-w6rr \
   #  - https://github.com/dbt-labs/dbt-core/issues/10250 \
   #  - https://data.safetycli.com/v/70612/97c/ \
-  && pipenv check --ignore 70612 \
+  # NOTE: This ignored vulnerability (71064) was detected in requests, \
+  # but the upgraded version doesn't support the use case (protocol we are using).\
+  # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
+  && pipenv check --ignore 70612 --ignore 71064 \
   && yum remove -y gcc libffi-devel openssl-devel python39-devel \
   && yum clean all \
   && rm -rf /var/cache/yum
