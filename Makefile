@@ -86,9 +86,9 @@ build/ansible-operator:
 ##@ Dev image build
 
 # Convenience wrapper for building all remotely hosted images.
-.PHONY: image-build
 IMAGE_TARGET_LIST = ansible-operator
-image-build: build $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
+image-build: BUILD_GOOS=linux
+image-build: build $(foreach i,$(IMAGE_TARGET_LIST), image/$(i)) ## Build all images.
 
 # Build an image.
 BUILD_IMAGE_REPO = quay.io/operator-framework
