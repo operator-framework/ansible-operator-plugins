@@ -15,7 +15,7 @@ export K8S_VERSION = 1.29.0
 export TOOLS_DIR = tools/bin
 export SCRIPTS_DIR = tools/scripts
 REPO = $(shell go list -m)
-BUILD_DIR = .
+BUILD_DIR ?= .
 export GO_BUILD_ASMFLAGS = all=-trimpath=$(shell dirname $(PWD))
 export GO_BUILD_GCFLAGS = all=-trimpath=$(shell dirname $(PWD))
 export GO_BUILD_LDFLAGS =  \
@@ -45,6 +45,9 @@ include .bingo/Variables.mk
 # you are only building the binary
 BUILD_GOOS ?= $(shell go env GOOS)
 BUILD_GOARCH ?= $(shell go env GOARCH)
+
+# Construct build variables for docker
+BUILD_DOCKER_ARGS=--build-arg BUILD_DIR=$(BUILD_DIR)
 
 ##@ Development
 
@@ -87,8 +90,8 @@ build/ansible-operator:
 
 # Convenience wrapper for building all remotely hosted images.
 IMAGE_TARGET_LIST = ansible-operator
-image-build: BUILD_GOOS=linux
-image-build: build $(foreach i,$(IMAGE_TARGET_LIST), image/$(i)) ## Build all images.
+.PHONY: image-build
+image-build: build $(foreach i,$(IMAGE_TARGET_LIST),image/$(i)) ## Build all images.
 
 # Build an image.
 BUILD_IMAGE_REPO = quay.io/operator-framework
@@ -98,7 +101,7 @@ DOCKER_PROGRESS = --progress plain
 endif
 image/%: export DOCKER_CLI_EXPERIMENTAL = enabled
 image/%:
-	docker buildx build $(DOCKER_PROGRESS) -t $(BUILD_IMAGE_REPO)/$*:$(IMAGE_TAG) -f ./images/$*/Dockerfile --load . --no-cache
+	docker buildx build $(DOCKER_PROGRESS) $(BUILD_DOCKER_ARGS) -t $(BUILD_IMAGE_REPO)/$*:$(IMAGE_TAG) -f ./images/$*/Dockerfile --load . --no-cache
 ##@ Release
 
 ## TODO: Add release targets here
