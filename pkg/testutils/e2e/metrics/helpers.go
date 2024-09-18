@@ -48,8 +48,25 @@ func GetMetrics(sample sample.Sample, kubectl kubernetes.Kubectl, metricsCluster
 	gomega.Expect(len(token)).To(gomega.BeNumerically(">", 0))
 
 	ginkgo.By("creating a curl pod")
+	securityContext := `
+{
+	"apiVersion": "v1",
+	"spec": {
+		"securityContext": {
+			"runAsNonRoot": true,
+			"runAsUser": 1000,
+			"runAsGroup": 1000,
+			"fsGroup": 1000,
+			"seccompProfile": {
+				"type": "RuntimeDefault"
+			}
+		}
+	}
+}
+`
+	overrides := fmt.Sprintf("--overrides=%s", securityContext)
 	cmdOpts := []string{
-		"run", "curl", "--image=curlimages/curl:7.68.0", "--restart=OnFailure", "--",
+		"run", "curl", "--image=curlimages/curl:7.68.0", "--restart=OnFailure", overrides, "--",
 		"curl", "-v", "-k", "-H", fmt.Sprintf(`Authorization: Bearer %s`, token),
 		fmt.Sprintf("https://%s-controller-manager-metrics-service.%s.svc:8443/metrics", sample.Name(), kubectl.Namespace()),
 	}

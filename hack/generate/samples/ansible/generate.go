@@ -41,6 +41,12 @@ var memcachedGVK = schema.GroupVersionKind{
 	Kind:    "Memcached",
 }
 
+var skipSecretGeneration = ""
+
+func init() {
+	skipSecretGeneration = os.Getenv("SKIP_SECRET_GENERATION")
+}
+
 func getCli() *cli.CLI {
 	ansibleBundle, _ := plugin.NewBundleWithOptions(
 		plugin.WithName(golang.DefaultNameQualifier),
@@ -127,21 +133,25 @@ func GenerateMoleculeSample(samplesPath string) []sample.Sample {
 	)
 	pkg.CheckError("attempting to create sample cli", err)
 
-	addIgnore, err := samplecli.NewCliSample(
-		samplecli.WithCLI(getCli()),
-		samplecli.WithCommandContext(ansibleMoleculeMemcached.CommandContext()),
-		samplecli.WithGvk(
-			schema.GroupVersionKind{
-				Group:   "ignore",
-				Version: "v1",
-				Kind:    "Secret",
-			},
-		),
-		samplecli.WithPlugins("ansible"),
-		samplecli.WithExtraApiOptions("--generate-role"),
-		samplecli.WithName(ansibleMoleculeMemcached.Name()),
-	)
-	pkg.CheckError("creating ignore samples", err)
+	var addIgnore sample.Sample
+
+	if skipSecretGeneration == "" {
+		addIgnore, err = samplecli.NewCliSample(
+			samplecli.WithCLI(getCli()),
+			samplecli.WithCommandContext(ansibleMoleculeMemcached.CommandContext()),
+			samplecli.WithGvk(
+				schema.GroupVersionKind{
+					Group:   "ignore",
+					Version: "v1",
+					Kind:    "Secret",
+				},
+			),
+			samplecli.WithPlugins("ansible"),
+			samplecli.WithExtraApiOptions("--generate-role"),
+			samplecli.WithName(ansibleMoleculeMemcached.Name()),
+		)
+		pkg.CheckError("creating ignore samples", err)
+	}
 
 	// remove sample directory if it already exists
 	err = os.RemoveAll(ansibleMoleculeMemcached.Dir())
@@ -158,9 +168,11 @@ func GenerateMoleculeSample(samplesPath string) []sample.Sample {
 	err = e2e.AllowProjectBeMultiGroup(ansibleMoleculeMemcached)
 	pkg.CheckError("updating PROJECT file", err)
 
-	ignoreGen := sample.NewGenerator(sample.WithNoInit(), sample.WithNoWebhook())
-	err = ignoreGen.GenerateSamples(addIgnore)
-	pkg.CheckError("generating ansible molecule sample - ignore", err)
+	if skipSecretGeneration == "" {
+		ignoreGen := sample.NewGenerator(sample.WithNoInit(), sample.WithNoWebhook())
+		err = ignoreGen.GenerateSamples(addIgnore)
+		pkg.CheckError("generating ansible molecule sample - ignore", err)
+	}
 
 	ImplementMemcached(ansibleMoleculeMemcached, bundleImage)
 
