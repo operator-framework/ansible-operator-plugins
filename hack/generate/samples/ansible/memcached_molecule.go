@@ -57,6 +57,11 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 			err = kbutil.InsertCode(filepath.Join(sample.Dir(), "roles", strings.ToLower(gvk.Kind), "tasks", "main.yml"),
 				roleFragment, memcachedWithBlackListTask)
 			pkg.CheckError("replacing in tasks/main.yml", err)
+
+			log.Info("adding RBAC permissions for project.openshift.io")
+			err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "config", "rbac", "role.yaml"),
+				"# +kubebuilder:scaffold:rules", rolesForProject)
+			pkg.CheckError("replacing in role.yml", err)
 		}
 
 		if gvk.Kind != "Memcached" {
