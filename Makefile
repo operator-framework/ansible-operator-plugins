@@ -160,8 +160,12 @@ test-e2e-teardown: $(KIND)
 $(e2e_targets):: test-e2e-setup
 test-e2e:: $(e2e_tests) ## Run e2e tests
 
-test-e2e-ansible:: image/ansible-operator ## Run Ansible e2e tests
+test-e2e-ansible:: image/ansible-operator test-e2e-ansible-run ## Run Ansible e2e tests
+
+.PHONY: test-e2e-ansible-run
+test-e2e-ansible-run:
 	go test ./test/e2e/ansible -v -ginkgo.v
+
 test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
 	go run ./hack/generate/samples/molecule/generate.go
 	./hack/tests/e2e-ansible-molecule.sh
