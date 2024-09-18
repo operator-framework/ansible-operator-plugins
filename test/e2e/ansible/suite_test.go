@@ -56,6 +56,11 @@ var (
 	image                      = "e2e-test-ansible:temp"
 )
 
+const (
+	MEMCACHED_MOLECULE_OPERATOR_IMAGE = "MEMCACHED_MOLECULE_OPERATOR_IMAGE"
+	SKIP_LOCAL_TEST                   = "SKIP_LOCAL_TEST"
+)
+
 // BeforeSuite run before any specs are run to perform the required actions for all e2e ansible tests.
 var _ = BeforeSuite(func() {
 	wd, err := os.Getwd()
@@ -105,9 +110,13 @@ var _ = BeforeSuite(func() {
 		}, 3*time.Minute, time.Second).Should(Succeed())
 	}
 
-	By("building the project image")
-	err = operator.BuildOperatorImage(ansibleSample, image)
-	Expect(err).NotTo(HaveOccurred())
+	if image_env_var, exists := os.LookupEnv(MEMCACHED_MOLECULE_OPERATOR_IMAGE); exists {
+		image = image_env_var
+	} else {
+		By("building the project image")
+		err = operator.BuildOperatorImage(ansibleSample, image)
+		Expect(err).NotTo(HaveOccurred())
+	}
 
 	onKind, err := kind.IsRunningOnKind(kctl)
 	Expect(err).NotTo(HaveOccurred())
@@ -128,9 +137,11 @@ var _ = AfterSuite(func() {
 	}
 
 	By("destroying container image and work dir")
-	cmd := exec.Command("docker", "rmi", "-f", image)
-	if _, err := ansibleSample.CommandContext().Run(cmd); err != nil {
-		Expect(err).To(BeNil())
+	if _, exists := os.LookupEnv(MEMCACHED_MOLECULE_OPERATOR_IMAGE); !exists {
+		cmd := exec.Command("docker", "rmi", "-f", image)
+		if _, err := ansibleSample.CommandContext().Run(cmd); err != nil {
+			Expect(err).To(BeNil())
+		}
 	}
 	if err := os.RemoveAll(testdir); err != nil {
 		Expect(err).To(BeNil())
