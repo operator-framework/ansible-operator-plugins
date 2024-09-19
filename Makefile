@@ -166,8 +166,14 @@ test-e2e-ansible:: image/ansible-operator test-e2e-ansible-run ## Run Ansible e2
 test-e2e-ansible-run:
 	go test ./test/e2e/ansible -v -ginkgo.v
 
-test-e2e-ansible-molecule:: install dev-install image/ansible-operator ## Run molecule-based Ansible e2e tests
+test-e2e-ansible-molecule:: install dev-install image/ansible-operator test-e2e-ansible-molecule-generate test-e2e-ansible-molecule-run ## Run molecule-based Ansible e2e tests
+
+.PHONY: test-e2e-ansible-molecule-generate
+test-e2e-ansible-molecule-generate:
 	go run ./hack/generate/samples/molecule/generate.go
+
+.PHONY: test-e2e-ansible-molecule-run
+test-e2e-ansible-molecule-run:
 	./hack/tests/e2e-ansible-molecule.sh
 
 ## Location to install dependencies to
