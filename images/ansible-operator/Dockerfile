@@ -21,12 +21,12 @@ ENV PIP_NO_CACHE_DIR=1
 # and remove those not needed at runtime.
 RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum update -y \
-  && yum install -y python3.11 \
-  && yum install -y libffi-devel openssl-devel gcc python3.11-devel python3.11-pip python3.11-setuptools \
-  && pip3.11 install --upgrade pip~=24.2 \
-  && pip3.11 install pipenv \
+  && yum install -y python3.12 \
+  && yum install -y libffi-devel openssl-devel gcc python3.12-devel python3.12-pip python3.12-setuptools \
+  && pip3.12 install --upgrade pip~=24.2 \
+  && pip3.12 install pipenv \
   && pipenv requirements > requirements.txt \
-  && pip3.11 install -r requirements.txt --prefix /usr/local \
+  && pip3.12 install -r requirements.txt --prefix /usr/local \
   # NOTE: This ignored vulnerability (70612) was detected in jinja2, \
   # but the vulnerability is disputed and may never be fixed. See: \
   #  - https://github.com/advisories/GHSA-f6pv-j8mr-w6rr \
@@ -36,7 +36,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   # but the upgraded version doesn't support the use case (protocol we are using).\
   # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
   && safety check --ignore 70612 --ignore 71064 \
-  && yum remove -y gcc libffi-devel openssl-devel python3.11-devel \
+  && yum remove -y gcc libffi-devel openssl-devel python3.12-devel \
   && yum clean all \
   && rm -rf /var/cache/yum
 
@@ -55,15 +55,15 @@ RUN mkdir -p /etc/ansible \
 
 RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum update -y \
-  && yum install -y python3.11 \
-  && yum install -y python3.11-pip python3.11-setuptools \
-  && pip3.11 install --upgrade pip~=24.2 \
-  && pip3.11 install pipenv==2024.0.1 \
+  && yum install -y python3.12 \
+  && yum install -y python3.12-pip python3.12-setuptools \
+  && pip3.12 install --upgrade pip~=24.2 \
+  && pip3.12 install pipenv==2024.0.1 \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-COPY --from=basebuilder /usr/local/lib64/python3.11/site-packages   /usr/local/lib64/python3.11/site-packages
-COPY --from=basebuilder /usr/local/lib/python3.11 /usr/local/lib/python3.11
+COPY --from=basebuilder /usr/local/lib64/python3.12/site-packages   /usr/local/lib64/python3.12/site-packages
+COPY --from=basebuilder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=basebuilder /usr/local/bin /usr/local/bin
 
 ENV TINI_VERSION=v0.19.0
