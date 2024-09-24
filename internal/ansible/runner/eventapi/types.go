@@ -52,13 +52,13 @@ type EventTime struct {
 
 // UnmarshalJSON - override unmarshal json.
 func (e *EventTime) UnmarshalJSON(b []byte) (err error) {
-	e.Time, err = time.Parse("2006-01-02T15:04:05.999999999", strings.Trim(string(b[:]), "\"\\"))
+	e.Time, err = time.Parse("2006-01-02T15:04:05.999999999+00:00", strings.Trim(string(b[:]), "\"\\"))
 	return
 }
 
 // MarshalJSON - override the marshal json.
 func (e EventTime) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("\"%s\"", e.Time.Format("2006-01-02T15:04:05.99999999"))), nil
+	return []byte(fmt.Sprintf("\"%s\"", e.Time.Format("2006-01-02T15:04:05.99999999+00:00"))), nil
 }
 
 // JobEvent - event of an ansible run.
