@@ -9,6 +9,7 @@ ansible-runner-http = "~=1.0.0"
 ansible-core = "~=2.15.9"
 urllib3 = "~=1.26.17"
 kubernetes = "==29.0.0"
+cryptography = "==43.0.1"
 
 [dev-packages]
 

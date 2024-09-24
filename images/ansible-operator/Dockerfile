@@ -24,6 +24,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum install -y libffi-devel openssl-devel python39-devel gcc python39-pip python39-setuptools \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
+  && pip3 install cryptography \
   && pipenv install --deploy \
   # NOTE: This ignored vulnerability (70612) was detected in jinja2, \
   # but the vulnerability is disputed and may never be fixed. See: \
@@ -33,7 +34,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   # NOTE: This ignored vulnerability (71064) was detected in requests, \
   # but the upgraded version doesn't support the use case (protocol we are using).\
   # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
-  && pipenv check --ignore 70612 --ignore 71064 \
+  && saftey check --ignore 70612 --ignore 71064 \
   && yum remove -y gcc libffi-devel openssl-devel python39-devel \
   && yum clean all \
   && rm -rf /var/cache/yum
