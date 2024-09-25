@@ -40,17 +40,17 @@ dockers:
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
-#- image_templates:
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
-#  dockerfile: images/ansible-operator/Dockerfile
-#  goos: linux
-#  goarch: ppc64le
-#  use: buildx
-#  build_flag_templates:
-#    - "--platform=linux/ppc64le"
-#  extra_files:
-#    - "images/ansible-operator/Pipfile"
-#    - "images/ansible-operator/Pipfile.lock"
+- image_templates:
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
+  dockerfile: images/ansible-operator/Dockerfile
+  goos: linux
+  goarch: ppc64le
+  use: buildx
+  build_flag_templates:
+    - "--platform=linux/ppc64le"
+  extra_files:
+    - "images/ansible-operator/Pipfile"
+    - "images/ansible-operator/Pipfile.lock"
 #- image_templates:
 #    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-s390x"
 #  dockerfile: images/ansible-operator/Dockerfile
@@ -67,7 +67,7 @@ docker_manifests:
   image_templates:
     - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-amd64"
     - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-arm64"
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
 #    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-s390x"
 archives:
   - format: binary
