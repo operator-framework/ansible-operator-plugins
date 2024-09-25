@@ -172,7 +172,7 @@ $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
 export ENABLE_RELEASE_PIPELINE ?= false
-export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m --debug
 release: $(GORELEASER) ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
 	$(GORELEASER) $(GORELEASER_ARGS)
 
