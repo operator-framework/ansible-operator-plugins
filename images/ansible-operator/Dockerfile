@@ -40,7 +40,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-FROM registry.access.redhat.com/ubi9/ubi:9.4-1214 as base
+FROM registry.access.redhat.com/ubi9/ubi:9.4-1214 AS base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
