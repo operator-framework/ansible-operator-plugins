@@ -84,28 +84,28 @@ jobs:
     - name: Restore amd64 binary
       uses: actions/cache/restore@v4
       with:
-        path: dist/ansible-operator_linux_amd64
+        path: dist-cache/ansible-operator_linux_amd64
         key: amd64-${{ github.sha }}
         fail-on-cache-miss: true
 
     - name: Restore arm64 binary
       uses: actions/cache/restore@v4
       with:
-        path: dist/ansible-operator_linux_arm64
+        path: dist-cache/ansible-operator_linux_arm64
         key: arm64-${{ github.sha }}
         fail-on-cache-miss: true
 
     - name: Restore ppc64le binary
       uses: actions/cache/restore@v4
       with:
-        path: dist/ansible-operator_linux_ppc64le
+        path: dist-cache/ansible-operator_linux_ppc64le
         key: ppc64le-${{ github.sha }}
         fail-on-cache-miss: true
 
     - name: Restore s390x binary
       uses: actions/cache/restore@v4
       with:
-        path: dist/ansible-operator_linux_s390x
+        path: dist-cache/ansible-operator_linux_s390x
         key: s390x-${{ github.sha }}
         fail-on-cache-miss: true
 
