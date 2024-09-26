@@ -1,3 +1,5 @@
+builds:
+- skip: true
 docker_manifests:
 - name_template: "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}"
   image_templates:
