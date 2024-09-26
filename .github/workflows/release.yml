@@ -74,7 +74,7 @@ jobs:
   goreleaser:
     name: goreleaser
     runs-on: ubuntu-24.04
-    need: release-architectures
+    needs: release-architectures
     steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
