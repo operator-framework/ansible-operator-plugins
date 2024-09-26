@@ -10,6 +10,7 @@ builds:
     gcflags: "{{ .Env.GO_BUILD_GCFLAGS }}"
     ldflags: "{{ .Env.GO_BUILD_LDFLAGS }}"
     mod_timestamp: "{{ .CommitTimestamp }}"
+    no_unique_dist_dir: true
     goos:
     - linux
     goarch:
