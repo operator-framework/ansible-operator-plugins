@@ -64,10 +64,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
+    - name: Move Binary
+      run: |
+        mkdir -p dist-cache
+        mv dist/ansible-operator dist-cache/ansible-operator_linux_${{ matrix.arch }}
+
     - name: Save binary
       uses: actions/cache/save@v4
       with:
-        path: dist/ansible-operator
+        path: dist-cache/ansible-operator_linux_${{ matrix.arch }}
         key: ${{ matrix.arch }}-${{ github.sha }}
 
 
