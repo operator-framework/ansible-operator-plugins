@@ -16,7 +16,7 @@ builds:
     - arm64
 dockers:
 - image_templates:
-    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-arm64"
+  - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-arm64"
   dockerfile: images/ansible-operator/Dockerfile
   goos: linux
   goarch: arm64
@@ -26,18 +26,8 @@ dockers:
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
-#docker_manifests:
-#- name_template: "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}"
-#  image_templates:
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-amd64"
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-arm64"
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
-#    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-s390x"
 archives:
   - format: binary
     name_template: "{{ .Binary }}_{{ .Os }}_{{ .Arch }}"
-changelog:
-  use: github-native
-  skip: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
 release:
-  disable: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
+  disable: true

@@ -10,3 +10,8 @@ changelog:
   skip: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
 release:
   disable: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
+  extra_files:
+  - glob: ./dist-cache/ansible-operator_linux_amd64
+  - glob: ./dist-cache/ansible-operator_linux_arm64
+  - glob: ./dist-cache/ansible-operator_linux_ppc64le
+  - glob: ./dist-cache/ansible-operator_linux_s390x
