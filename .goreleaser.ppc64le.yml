@@ -24,6 +24,8 @@ dockers:
   use: buildx
   build_flag_templates:
     - "--platform=linux/ppc64le"
+    - "--cache-from=type=gha"
+    - "--cache-to=type=gha,mode=max"
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
