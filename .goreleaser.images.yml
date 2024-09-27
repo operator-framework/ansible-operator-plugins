@@ -14,16 +14,16 @@ builds:
     goos:
     - linux
     goarch:
-    - amd64
+    - "{{ .Env.GOARCH }}"
 dockers:
 - image_templates:
-  - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-amd64"
+  - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-{{ .Env.GOARCH }}"
   dockerfile: images/ansible-operator/Dockerfile
   goos: linux
-  goarch: amd64
+  goarch: "{{ .Env.GOARCH }}"
   use: buildx
   build_flag_templates:
-    - "--platform=linux/amd64"
+    - "--platform=linux/{{ .Env.GOARCH }}"
     - "--cache-from=type=gha"
     - "--cache-to=type=gha,mode=max"
   extra_files:
