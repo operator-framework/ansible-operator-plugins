@@ -278,6 +278,24 @@ func TestSetCondition(t *testing.T) {
 			keepLastTransitionTime: true,
 			keepMessage:            true,
 		},
+		{
+			name: "on failure, always update error message",
+			status: &Status{
+				Conditions: []Condition{
+					{
+						Type:               FailureConditionType,
+						Status:             v1.ConditionTrue,
+						Reason:             FailedReason,
+						Message:            "Previous failure",
+						LastTransitionTime: lastTransitionTime,
+					},
+				},
+			},
+			condition:              NewCondition(FailureConditionType, v1.ConditionTrue, nil, FailedReason, "New failure"),
+			expectedNewSize:        1,
+			keepLastTransitionTime: true,
+			keepMessage:            false,
+		},
 	}
 
 	for _, tc := range testCases {

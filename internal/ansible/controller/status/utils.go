@@ -67,7 +67,7 @@ func GetCondition(status Status, condType ConditionType) *Condition {
 // we are about to add already exists and has the same status and reason then we are not going to update.
 func SetCondition(status *Status, condition Condition) {
 	currentCond := GetCondition(*status, condition.Type)
-	if currentCond != nil && currentCond.Status == condition.Status && currentCond.Reason == condition.Reason {
+	if currentCond != nil && condition.Type != FailureConditionType && currentCond.Status == condition.Status && currentCond.Reason == condition.Reason {
 		return
 	}
 	// Do not update lastTransitionTime if the status of the condition doesn't change.
