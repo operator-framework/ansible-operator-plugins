@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ansible-runner = "~=2.3.3"
+ansible-runner = "~=2.3.6"
 ansible-runner-http = "~=1.0.0"
-ansible-core = "~=2.15.9"
-urllib3 = "~=1.26.17"
+ansible-core = "~=2.15.12"
+urllib3 = "~=1.26"
 kubernetes = "==29.0.0"
+requests = "~=2.31.0"
 
 [dev-packages]
 
