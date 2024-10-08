@@ -83,6 +83,7 @@ RUN echo "${USER_NAME}:x:${USER_UID}:0:${USER_NAME} user:${HOME}:/sbin/nologin" 
 WORKDIR ${HOME}
 USER ${USER_UID}
 
-COPY ansible-operator /usr/local/bin/ansible-operator
+ARG BUILD_DIR
+COPY ${BUILD_DIR}/ansible-operator /usr/local/bin/ansible-operator
 
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/ansible-operator", "run", "--watches-file=./watches.yaml"]
