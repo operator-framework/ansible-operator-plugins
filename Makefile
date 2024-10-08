@@ -171,10 +171,22 @@ LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
+ARCHITECTURES=amd64 arm64 ppc64le s390x
+
+define RELEASE_template
+.PHONY: release-arch-$(1)
+release-arch-$(1): $(GORELEASER) ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
+	$(GORELEASER) $(GORELEASER_ARGS) --config .goreleaser.$(1).yml
+endef
+
 export ENABLE_RELEASE_PIPELINE ?= false
-export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m --debug
+$(foreach arch,$(ARCHITECTURES),$(eval $(call RELEASE_template,$(arch))))
+
+export ENABLE_RELEASE_PIPELINE ?= false
+export GORELEASER_ARGS         ?= --snapshot --clean --timeout=120m --debug
 release: $(GORELEASER) ## Runs goreleaser. By default, this will run only as a snapshot and will not publish any artifacts unless it is run with different arguments. To override the arguments, run with "GORELEASER_ARGS=...". When run as a github action from a tag, this target will publish a full release.
-	$(GORELEASER) $(GORELEASER_ARGS)
+	$(GORELEASER) $(GORELEASER_ARGS) --config .goreleaser.manifest.yml
 
 .DEFAULT_GOAL := help
 .PHONY: help

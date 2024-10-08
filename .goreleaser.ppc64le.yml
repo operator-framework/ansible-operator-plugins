@@ -1,0 +1,34 @@
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+builds:
+  - id: binary
+    main: ./cmd/ansible-operator/
+    binary: ansible-operator
+    asmflags: "{{ .Env.GO_BUILD_ASMFLAGS }}"
+    gcflags: "{{ .Env.GO_BUILD_GCFLAGS }}"
+    ldflags: "{{ .Env.GO_BUILD_LDFLAGS }}"
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    no_unique_dist_dir: true
+    goos:
+    - linux
+    goarch:
+    - ppc64le
+dockers:
+- image_templates:
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
+  dockerfile: images/ansible-operator/Dockerfile
+  goos: linux
+  goarch: ppc64le
+  use: buildx
+  build_flag_templates:
+    - "--platform=linux/ppc64le"
+  extra_files:
+    - "images/ansible-operator/Pipfile"
+    - "images/ansible-operator/Pipfile.lock"
+archives:
+  - format: binary
+    name_template: "{{ .Binary }}_{{ .Os }}_{{ .Arch }}"
+release:
+  disable: true

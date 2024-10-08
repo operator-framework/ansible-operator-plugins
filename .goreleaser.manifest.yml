@@ -1,0 +1,19 @@
+builds:
+- skip: true
+docker_manifests:
+- name_template: "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}"
+  image_templates:
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-amd64"
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-arm64"
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-ppc64le"
+    - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-s390x"
+changelog:
+  use: github-native
+  skip: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
+release:
+  disable: '{{ ne .Env.ENABLE_RELEASE_PIPELINE "true" }}'
+  extra_files:
+  - glob: ./dist-cache/ansible-operator_linux_amd64
+  - glob: ./dist-cache/ansible-operator_linux_arm64
+  - glob: ./dist-cache/ansible-operator_linux_ppc64le
+  - glob: ./dist-cache/ansible-operator_linux_s390x
