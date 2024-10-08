@@ -2,7 +2,7 @@
 # It is built with dependencies that take a while to download, thus speeding
 # up ansible deploy jobs.
 
-FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 AS basebuilder
+FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 AS basebuilder
 
 # Install Rust so that we can ensure backwards compatibility with installing/building the cryptography wheel across all platforms
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -19,9 +19,11 @@ ENV PIP_NO_CACHE_DIR=1 \
     PIPENV_CLEAR=1
 # Ensure fresh metadata rather than cached metadata, install system and pip python deps,
 # and remove those not needed at runtime.
-RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
-  && yum update -y \
-  && yum install -y libffi-devel openssl-devel python39-devel gcc python39-pip python39-setuptools \
+RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
+  && dnf update -y \
+  && dnf install -y gcc libffi-devel openssl-devel python3.12-devel \
+  && pushd /usr/local/bin && ln -sf ../../bin/python3.12 python3 && popd \
+  && python3 -m ensurepip --upgrade \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
   && pipenv install --deploy \
@@ -34,11 +36,11 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   # but the upgraded version doesn't support the use case (protocol we are using).\
   # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
   && pipenv check --ignore 70612 --ignore 71064 \
-  && yum remove -y gcc libffi-devel openssl-devel python39-devel \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+  && dnf remove -y gcc libffi-devel openssl-devel python3.12-devel \
+  && dnf clean all \
+  && rm -rf /var/cache/dnf
 
-FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 as base
+FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 as base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
@@ -51,16 +53,14 @@ RUN mkdir -p /etc/ansible \
   && echo 'roles_path = /opt/ansible/roles' >> /etc/ansible/ansible.cfg \
   && echo 'library = /usr/share/ansible/openshift' >> /etc/ansible/ansible.cfg
 
-RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
-  && yum update -y \
-  && yum install -y python39-pip python39-setuptools \
-  && pip3 install --upgrade pip~=23.3.2 \
-  && pip3 install pipenv==2023.11.15 \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
+  && dnf update -y \
+  && dnf install -y python3.12 \
+  && dnf clean all \
+  && rm -rf /var/cache/dnf
 
-COPY --from=basebuilder /usr/local/lib64/python3.9/site-packages /usr/local/lib64/python3.9/site-packages
-COPY --from=basebuilder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=basebuilder /usr/local/lib64/python3.12/site-packages /usr/local/lib64/python3.12/site-packages
+COPY --from=basebuilder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=basebuilder /usr/local/bin /usr/local/bin
 
 ENV TINI_VERSION=v0.19.0

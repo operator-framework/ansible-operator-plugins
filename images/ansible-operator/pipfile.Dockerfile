@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 AS basebuilder
+FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 AS basebuilder
 
 # Install Rust so that we can ensure backwards compatibility with installing/building the cryptography wheel across all platforms
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -15,9 +15,11 @@ ENV PIP_NO_CACHE_DIR=1 \
     PIPENV_CLEAR=1
 # Ensure fresh metadata rather than cached metadata, install system and pip python deps,
 # and remove those not needed at runtime.
-RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
-  && yum update -y \
-  && yum install -y libffi-devel openssl-devel python39-devel gcc python39-pip python39-setuptools \
+RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
+  && dnf update -y \
+  && dnf install -y gcc libffi-devel openssl-devel python3.12-devel \
+  && pushd /usr/local/bin && ln -sf ../../bin/python3.12 python3 && popd \
+  && python3 -m ensurepip --upgrade \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
   && pipenv lock \
@@ -30,9 +32,9 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   # but the upgraded version doesn't support the use case (protocol we are using).\
   # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
   && pipenv check --ignore 70612 --ignore 71064 \
-  && yum remove -y gcc libffi-devel openssl-devel python39-devel \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+  && dnf remove -y gcc libffi-devel openssl-devel python3.12-devel \
+  && dnf clean all \
+  && rm -rf /var/cache/dnf
 
 VOLUME /tmp/pip-airlock
 ENTRYPOINT ["cp", "./Pipfile.lock", "/tmp/pip-airlock/"]
