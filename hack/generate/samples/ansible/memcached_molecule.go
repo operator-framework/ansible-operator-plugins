@@ -41,12 +41,14 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 			err := kbutil.InsertCode(moleculeTaskPath, targetMoleculeCheckDeployment, molecuTaskToCheckConfigMap)
 			pkg.CheckError("replacing memcached task to add config map check", err)
 
-			log.Info("insert molecule task to ensure to check secret")
-			err = kbutil.InsertCode(moleculeTaskPath, memcachedCustomStatusMoleculeTarget, testSecretMoleculeCheck)
-			pkg.CheckError("replacing memcached task to add secret check", err)
+			if skipSecretGeneration == "" {
+				log.Info("insert molecule task to ensure to check secret")
+				err = kbutil.InsertCode(moleculeTaskPath, memcachedCustomStatusMoleculeTarget, testSecretMoleculeCheck)
+				pkg.CheckError("replacing memcached task to add secret check", err)
+			}
 
 			log.Info("insert molecule task to ensure to foo ")
-			err = kbutil.InsertCode(moleculeTaskPath, testSecretMoleculeCheck, testFooMoleculeCheck)
+			err = kbutil.InsertCode(moleculeTaskPath, memcachedCustomStatusMoleculeTarget, testFooMoleculeCheck)
 			pkg.CheckError("replacing memcached task to add foo check", err)
 
 			log.Info("insert molecule task to check custom metrics")
@@ -58,6 +60,11 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 			err = kbutil.InsertCode(filepath.Join(sample.Dir(), "roles", strings.ToLower(gvk.Kind), "tasks", "main.yml"),
 				roleFragment, memcachedWithBlackListTask)
 			pkg.CheckError("replacing in tasks/main.yml", err)
+
+			log.Info("adding RBAC permissions for project.openshift.io")
+			err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "config", "rbac", "role.yaml"),
+				"#+kubebuilder:scaffold:rules", rolesForProject)
+			pkg.CheckError("replacing in role.yml", err)
 		}
 
 		if gvk.Kind != "Memcached" {
@@ -95,34 +102,36 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 		"playbook: playbooks/memcached.yml", memcachedWatchCustomizations)
 	pkg.CheckError("replacing in watches", err)
 
-	log.Info("removing ignore group for the secret from watches as an workaround to work with core types")
-	err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "watches.yaml"),
-		"ignore.example.com", "\"\"")
-	pkg.CheckError("replacing the watches file", err)
+	if skipSecretGeneration == "" {
+		log.Info("removing ignore group for the secret from watches as an workaround to work with core types")
+		err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "watches.yaml"),
+			"ignore.example.com", "\"\"")
+		pkg.CheckError("replacing the watches file", err)
 
-	log.Info("removing molecule test for the Secret since it is a core type")
-	cmd := exec.Command("rm", "-rf", filepath.Join(sample.Dir(), "molecule", "default", "tasks", "secret_test.yml"))
-	_, err = sample.CommandContext().Run(cmd)
-	pkg.CheckError("removing secret test file", err)
+		log.Info("removing molecule test for the Secret since it is a core type")
+		cmd := exec.Command("rm", "-rf", filepath.Join(sample.Dir(), "molecule", "default", "tasks", "secret_test.yml"))
+		_, err = sample.CommandContext().Run(cmd)
+		pkg.CheckError("removing secret test file", err)
 
-	log.Info("adding Secret task to the role")
-	err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "roles", "secret", "tasks", "main.yml"),
-		originalTaskSecret, taskForSecret)
-	pkg.CheckError("replacing in secret/tasks/main.yml file", err)
+		log.Info("adding Secret task to the role")
+		err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "roles", "secret", "tasks", "main.yml"),
+			originalTaskSecret, taskForSecret)
+		pkg.CheckError("replacing in secret/tasks/main.yml file", err)
 
-	log.Info("adding ManageStatus == false for role secret")
-	err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "watches.yaml"),
-		"role: secret", manageStatusFalseForRoleSecret)
-	pkg.CheckError("replacing in watches.yaml", err)
+		log.Info("adding ManageStatus == false for role secret")
+		err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "watches.yaml"),
+			"role: secret", manageStatusFalseForRoleSecret)
+		pkg.CheckError("replacing in watches.yaml", err)
 
-	// prevent high load of controller caused by watching all the secrets in the cluster
-	watchNamespacePatchFileName := "watch_namespace_patch.yaml"
-	log.Info("adding WATCH_NAMESPACE env patch to watch own namespace")
-	err = os.WriteFile(filepath.Join(sample.Dir(), "config", "testing", watchNamespacePatchFileName), []byte(watchNamespacePatch), 0644)
-	pkg.CheckError("adding watch_namespace_patch.yaml", err)
+		// prevent high load of controller caused by watching all the secrets in the cluster
+		watchNamespacePatchFileName := "watch_namespace_patch.yaml"
+		log.Info("adding WATCH_NAMESPACE env patch to watch own namespace")
+		err = os.WriteFile(filepath.Join(sample.Dir(), "config", "testing", watchNamespacePatchFileName), []byte(watchNamespacePatch), 0644)
+		pkg.CheckError("adding watch_namespace_patch.yaml", err)
 
-	log.Info("adding WATCH_NAMESPACE env patch to patch list to be applied")
-	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patchesStrategicMerge:",
-		fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
-	pkg.CheckError("inserting in kustomization.yaml", err)
+		log.Info("adding WATCH_NAMESPACE env patch to patch list to be applied")
+		err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patchesStrategicMerge:",
+			fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
+		pkg.CheckError("inserting in kustomization.yaml", err)
+	}
 }

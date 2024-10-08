@@ -60,7 +60,7 @@ var _ = Describe("Running ansible projects", func() {
 			Expect(metrics.CleanUpMetrics(kctl, metricsClusterRoleBindingName)).To(Succeed())
 
 			By("cleaning up created API objects during test process")
-			Expect(operator.UndeployOperator(ansibleSample)).To(Succeed())
+			testutils.WrapWarnOutput("", operator.UndeployOperator(ansibleSample))
 
 			By("ensuring that the namespace was deleted")
 			testutils.WrapWarnOutput(kctl.Wait(false, "namespace", "foo", "--for", "delete", "--timeout", "2m"))

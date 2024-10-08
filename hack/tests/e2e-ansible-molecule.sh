@@ -40,21 +40,27 @@ ROOTDIR="$(pwd)"
 cp -r $ROOTDIR/testdata/ansible/memcached-molecule-operator/ $TMPDIR/memcached-molecule-operator
 cp -r $ROOTDIR/testdata/ansible/advanced-molecule-operator/ $TMPDIR/advanced-molecule-operator
 
-pushd $TMPDIR/memcached-molecule-operator
+# Skip Kind test with memcached-molecule-operator if ADVANCED_MOLECULE_OPERATOR_IMAGE has a value.
+if [ -z "${ADVANCED_MOLECULE_OPERATOR_IMAGE-}" ] ; then
+  pushd $TMPDIR/memcached-molecule-operator
 
-header_text "Running Kind test with memcached-molecule-operator"
-make kustomize
-if [ -f ./bin/kustomize ] ; then
-  KUSTOMIZE="$(realpath ./bin/kustomize)"
-else
-  KUSTOMIZE="$(which kustomize)"
+  header_text "Running Kind test with memcached-molecule-operator"
+  make kustomize
+  if [ -f ./bin/kustomize ] ; then
+    KUSTOMIZE="$(realpath ./bin/kustomize)"
+  else
+    KUSTOMIZE="$(which kustomize)"
+  fi
+  KUSTOMIZE_PATH=${KUSTOMIZE} TEST_OPERATOR_NAMESPACE=default molecule test -s kind
+  popd
 fi
-KUSTOMIZE_PATH=${KUSTOMIZE} TEST_OPERATOR_NAMESPACE=default molecule test -s kind
-popd
 
 header_text "Running Default test with advanced-molecule-operator"
 
-make test-e2e-setup
+# Skip creation of Kind cluster if ADVANCED_MOLECULE_OPERATOR_IMAGE has a value.
+if [ -z "${ADVANCED_MOLECULE_OPERATOR_IMAGE-}" ] ; then
+  make test-e2e-setup
+fi
 pushd $TMPDIR/advanced-molecule-operator
 
 make kustomize
@@ -64,8 +70,16 @@ else
   KUSTOMIZE="$(which kustomize)"
 fi
 
-DEST_IMAGE="quay.io/example/advanced-molecule-operator:v0.0.1"
-docker build -t "$DEST_IMAGE" --no-cache .
-load_image_if_kind "$DEST_IMAGE"
-KUSTOMIZE_PATH=$KUSTOMIZE OPERATOR_PULL_POLICY=Never OPERATOR_IMAGE=${DEST_IMAGE} TEST_OPERATOR_NAMESPACE=osdk-test molecule test
+# Check if ADVANCED_MOLECULE_OPERATOR_IMAGE has value or not. If it doesn't have a value then proceed with the test
+# using a Kind cluster, otherwise proceed with the test without the Kind cluster.
+if [ -z "${ADVANCED_MOLECULE_OPERATOR_IMAGE-}" ] ; then
+  DEST_IMAGE="quay.io/example/advanced-molecule-operator:v0.0.1"
+  docker build -t "$DEST_IMAGE" --no-cache .
+  load_image_if_kind "$DEST_IMAGE"
+  IMAGE_PULL_POLICY="Never"
+else
+  DEST_IMAGE=${ADVANCED_MOLECULE_OPERATOR_IMAGE}
+  IMAGE_PULL_POLICY="IfNotPresent"
+fi
+KUSTOMIZE_PATH=$KUSTOMIZE OPERATOR_PULL_POLICY=${IMAGE_PULL_POLICY} OPERATOR_IMAGE=${DEST_IMAGE} TEST_OPERATOR_NAMESPACE=osdk-test molecule test
 popd
