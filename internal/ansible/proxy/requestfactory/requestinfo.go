@@ -173,7 +173,6 @@ func (r *RequestInfoFactory) NewRequestInfo(req *http.Request) (*RequestInfo, er
 
 		requestInfo.Verb = currentParts[0]
 		currentParts = currentParts[1:]
-
 	} else {
 		switch req.Method {
 		case "POST":

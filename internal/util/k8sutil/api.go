@@ -37,7 +37,6 @@ func GetCustomResourceDefinitions(crdsDir string) (
 	v1crds []apiextv1.CustomResourceDefinition,
 	v1beta1crds []apiextv1beta1.CustomResourceDefinition,
 	err error) {
-
 	infos, err := os.ReadDir(crdsDir)
 	if err != nil {
 		return nil, nil, err
@@ -98,7 +97,6 @@ func GetCustomResourceDefinitions(crdsDir string) (
 				}
 				crGVKSet[gvk] = struct{}{}
 			}
-
 		}
 		if err = scanner.Err(); err != nil {
 			return nil, nil, fmt.Errorf("error scanning %s: %w", path, err)

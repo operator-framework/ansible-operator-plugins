@@ -82,7 +82,6 @@ func ToCamel(s string) string {
 // If the last character of the special word is an "s" (i.e plural of the word
 // found in wordMapping), it is considered a part of that word and will be capitalized.
 func preprocessWordMapping(value string) string {
-
 	for _, word := range wordMapping {
 		idx := strings.Index(value, word)
 		if idx >= 0 {

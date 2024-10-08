@@ -53,7 +53,7 @@ namePrefix: osdk-
 patchesStrategicMerge:
 - manager_image.yaml
 - debug_logs_patch.yaml
-- ../default/manager_auth_proxy_patch.yaml
+- ../default/manager_metrics_patch.yaml
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
