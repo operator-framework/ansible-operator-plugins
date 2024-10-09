@@ -7,7 +7,7 @@ import (
 
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"sigs.k8s.io/kubebuilder/v3/pkg/cli"
+	"sigs.k8s.io/kubebuilder/v4/pkg/cli"
 )
 
 // CliSample is a generalized object that implements the Sample interface. It is meant

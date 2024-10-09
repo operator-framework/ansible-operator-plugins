@@ -198,7 +198,6 @@ func addWatchToController(owner kubeconfig.NamespacedOwnerReference, cMap *contr
 		m := fmt.Sprintf("Could not get rest mapping for: %v", resource.GroupVersionKind())
 		log.Error(err, m)
 		return err
-
 	}
 	ownerGV, err := schema.ParseGroupVersion(owner.APIVersion)
 	if err != nil {

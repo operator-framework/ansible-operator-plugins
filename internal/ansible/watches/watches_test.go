@@ -138,7 +138,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 	twoSeconds := metav1.Duration{Duration: time.Second * 2}
 
 	validWatches := []Watch{
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -152,7 +152,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			SnakeCaseParameters:         true,
 			MarkUnsafe:                  false,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -163,7 +163,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ReconcilePeriod: twoSeconds,
 			MarkUnsafe:      true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -180,7 +180,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 				Vars: map[string]interface{}{"sentinel": "finalizer_running"},
 			},
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -192,7 +192,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			WatchDependentResources:     true,
 			WatchClusterScopedResources: true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -202,7 +202,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ReconcilePeriod: zeroSeconds,
 			ManageStatus:    true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -211,7 +211,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			Playbook:     validTemplate.ValidPlaybook,
 			ManageStatus: true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -220,7 +220,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			Playbook:     validTemplate.ValidPlaybook,
 			ManageStatus: false,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -229,7 +229,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			Playbook:     validTemplate.ValidPlaybook,
 			ManageStatus: true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -243,7 +243,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 				Vars:     map[string]interface{}{"sentinel": "finalizer_running"},
 			},
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -256,7 +256,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 				Vars: map[string]interface{}{"sentinel": "finalizer_running"},
 			},
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -266,7 +266,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:            true,
 			MaxConcurrentReconciles: 1,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -276,7 +276,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:            true,
 			MaxConcurrentReconciles: 1,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -286,7 +286,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:            true,
 			MaxConcurrentReconciles: 4,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -296,7 +296,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:     true,
 			AnsibleVerbosity: 2,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -306,7 +306,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:     true,
 			AnsibleVerbosity: 2,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -316,7 +316,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus:     true,
 			AnsibleVerbosity: 4,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -326,7 +326,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			ManageStatus: true,
 			Vars:         map[string]interface{}{"sentinel": "reconciling"},
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -335,7 +335,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			Role:         filepath.Join(cwd, "testdata", "ansible_collections", "nameSpace", "collection", "roles", "someRole"),
 			ManageStatus: true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -361,7 +361,7 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 			},
 			ManageStatus: true,
 		},
-		Watch{
+		{
 			GroupVersionKind: schema.GroupVersionKind{
 				Version: "v1alpha1",
 				Group:   "app.example.com",
@@ -494,7 +494,6 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-
 			// Test Load with ANSIBLE_ROLES_PATH var
 			if tc.shouldSetAnsibleRolePathEnvVar {
 				anisbleEnvVar := "path/invalid:/path/invalid/myroles:" + wd
@@ -502,7 +501,6 @@ func TestLoad(t *testing.T) { //nolint:gocyclo
 				defer os.Unsetenv("ANSIBLE_ROLES_PATH")
 			}
 			if tc.shouldSetAnsibleCollectionPathEnvVar {
-
 				ansibleCollectionPathEnv := filepath.Join(wd, "testdata")
 				os.Setenv("ANSIBLE_COLLECTIONS_PATH", ansibleCollectionPathEnv)
 				defer os.Unsetenv("ANSIBLE_COLLECTIONS_PATH")
@@ -865,7 +863,6 @@ func TestGetPossibleRolePaths(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			if len(tt.args.rolesEnv) > 0 {
 				os.Setenv("ANSIBLE_ROLES_PATH", tt.args.rolesEnv)
 				defer os.Unsetenv("ANSIBLE_ROLES_PATH")

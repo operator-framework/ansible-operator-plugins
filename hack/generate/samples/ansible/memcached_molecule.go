@@ -22,14 +22,13 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
+	kbutil "sigs.k8s.io/kubebuilder/v4/pkg/plugin/util"
 
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/pkg"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
 )
 
 func ImplementMemcachedMolecule(sample sample.Sample, image string) {
-
 	for _, gvk := range sample.GVKs() {
 		moleculeTaskPath := filepath.Join(sample.Dir(), "molecule", "default", "tasks",
 			fmt.Sprintf("%s_test.yml", strings.ToLower(gvk.Kind)))
@@ -73,7 +72,6 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 				fixmeAssert, "")
 			pkg.CheckError(fmt.Sprintf("replacing %s_test.yml", strings.ToLower(gvk.Kind)), err)
 		}
-
 	}
 
 	log.Info("replacing project Dockerfile to use ansible base image with the dev tag")
@@ -125,4 +123,10 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patchesStrategicMerge:",
 		fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
 	pkg.CheckError("inserting in kustomization.yaml", err)
+
+	log.Info("enabling metrics in the manager")
+	err = kbutil.UncommentCode(
+		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
+		"#- path: manager_metrics_patch.yaml", "#")
+	pkg.CheckError("enabling metrics endpoint", err)
 }

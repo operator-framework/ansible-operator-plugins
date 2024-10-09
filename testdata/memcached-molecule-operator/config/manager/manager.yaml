@@ -59,8 +59,10 @@ spec:
         #   type: RuntimeDefault
       containers:
       - args:
-        - --leader-elect
-        - --leader-election-id=memcached-molecule-operator
+          - --leader-elect
+          - --leader-election-id=memcached-molecule-operator
+          - --health-probe-bind-address=:6789
+          - --metrics-bind-address=0
         image: controller:latest
         name: manager
         env:

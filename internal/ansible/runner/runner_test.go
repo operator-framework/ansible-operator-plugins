@@ -185,7 +185,6 @@ func TestNew(t *testing.T) {
 				if _, ok := parameters[tc.desiredObjectKey]; !ok {
 					t.Fatalf("Did not find expected objKey %v in parameters %+v", tc.desiredObjectKey, parameters)
 				}
-
 			}
 
 			if testRunnerStruct.GVK != testWatch.GroupVersionKind {

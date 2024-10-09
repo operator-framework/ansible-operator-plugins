@@ -195,7 +195,6 @@ func copyOperatorManifests(src, dest string) error {
 // BuildBundleImage builds the bundle image with the provided command or using
 // docker build command.
 func (meta *BundleMetaData) BuildBundleImage(tag string) error {
-
 	img := fmt.Sprintf("%s:%s", meta.BaseImage, tag)
 
 	// switch back to current working directory, so that subsequent
