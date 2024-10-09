@@ -12,6 +12,8 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     goos:
     - linux
+    - darwin
+    - windows
     goarch:
     - amd64
     - arm64
