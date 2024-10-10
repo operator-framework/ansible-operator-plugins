@@ -13,8 +13,53 @@ on:
     - main
 
 jobs:
+  build-cache:
+    strategy:
+      matrix:
+        arch:
+          - amd64
+          - arm64
+          - ppc64le
+          - s390x
+        platform: [linux]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version-file: "go.mod"
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+      # The Dockerfile expects that ansible-operator will be copied from the
+      # build context. We stub it here and then don't cache it. When Goreleaser
+      # runs, it should copy over the right file.
+    - name: Create ansible-operator stub
+      run: echo stubbed-in-ci >> ansible-operator
+
+    - name: Build
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        platforms: "${{ matrix.platform }}/${{ matrix.arch }}"
+        push: false
+        tags: "cache:${{ matrix.platform }}-${{ matrix.arch }}"
+        file: images/ansible-operator/Dockerfile
+        cache-from: type=gha,scope=${{ matrix.arch }}
+        cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
+        no-cache-filters: final # don't cache this because the stubbed ansible-operator bin was copied in.
+
   goreleaser:
-    name: goreleaser
+    needs: [build-cache]
     runs-on: ubuntu-latest
     steps:
     - name: Check out code into the Go module directory
@@ -38,6 +83,10 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
+    - name: Set up Docker Buildx
+      id: setup-buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Set the release related variables
       run: |
         if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -56,7 +105,13 @@ jobs:
           echo IMAGE_TAG="$(git describe --tags --always)" >> $GITHUB_ENV
         fi
 
+      # This gives us ACTIONS_RUNTIME_TOKEN and ACTIONS_CACHE_URL
+      # for use in goreleaser
+    - name: Expose GitHub Runtime
+      uses: crazy-max/ghaction-github-runtime@v3
+
     - name: Run goreleaser
       run: make release
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        BUILDX_BUILDER: ${{ steps.setup-buildx.outputs.name }}

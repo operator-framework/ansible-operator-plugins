@@ -38,7 +38,7 @@ RUN set -e && yum clean all && rm -rf /var/cache/yum/* \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 as base
+FROM registry.access.redhat.com/ubi8/ubi:8.9-1107 AS base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
@@ -68,7 +68,7 @@ RUN curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI_VE
   && chmod +x /tini && /tini --version
 
 # Final image.
-FROM base
+FROM base AS final
 
 ENV HOME=/opt/ansible \
     USER_NAME=ansible \

@@ -26,6 +26,9 @@ dockers:
   use: buildx
   build_flag_templates:
     - "--platform=linux/amd64"
+    - "--cache-from"
+    - "type=gha,scope=amd64,token={{ .Env.ACTIONS_RUNTIME_TOKEN }},url={{ .Env.ACTIONS_CACHE_URL }}"
+    - "--builder={{ .Env.BUILDX_BUILDER }}"
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
@@ -37,6 +40,9 @@ dockers:
   use: buildx
   build_flag_templates:
     - "--platform=linux/arm64"
+    - "--cache-from"
+    - "type=gha,scope=arm64,token={{ .Env.ACTIONS_RUNTIME_TOKEN }},url={{ .Env.ACTIONS_CACHE_URL }}"
+    - "--builder={{ .Env.BUILDX_BUILDER }}"
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
@@ -48,6 +54,9 @@ dockers:
   use: buildx
   build_flag_templates:
     - "--platform=linux/ppc64le"
+    - "--cache-from"
+    - "type=gha,scope=ppc64le,token={{ .Env.ACTIONS_RUNTIME_TOKEN }},url={{ .Env.ACTIONS_CACHE_URL }}"
+    - "--builder={{ .Env.BUILDX_BUILDER }}"
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
@@ -59,6 +68,9 @@ dockers:
   use: buildx
   build_flag_templates:
     - "--platform=linux/s390x"
+    - "--cache-from"
+    - "type=gha,scope=s390x,token={{ .Env.ACTIONS_RUNTIME_TOKEN }},url={{ .Env.ACTIONS_CACHE_URL }}"
+    - "--builder={{ .Env.BUILDX_BUILDER }}"
   extra_files:
     - "images/ansible-operator/Pipfile"
     - "images/ansible-operator/Pipfile.lock"
