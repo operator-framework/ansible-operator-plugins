@@ -40,7 +40,7 @@ RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
   && dnf clean all \
   && rm -rf /var/cache/dnf
 
-FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 as base
+FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 AS base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
@@ -68,7 +68,7 @@ RUN curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI_VE
   && chmod +x /tini && /tini --version
 
 # Final image.
-FROM base
+FROM base AS final
 
 ENV HOME=/opt/ansible \
     USER_NAME=ansible \
