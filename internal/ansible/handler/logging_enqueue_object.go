@@ -30,7 +30,7 @@ var log = logf.Log.WithName("ansible").WithName("handler")
 //
 //	&handler.LoggingEnqueueRequestForObject{}
 type LoggingEnqueueRequestForObject struct {
-	handler.InstrumentedEnqueueRequestForObject
+	handler.InstrumentedEnqueueRequestForObject[client.Object]
 }
 
 // Create implements EventHandler, and emits a log message.
@@ -54,7 +54,7 @@ func (h LoggingEnqueueRequestForObject) Delete(ctx context.Context, e event.Dele
 // Generic implements EventHandler, and emits a log message.
 func (h LoggingEnqueueRequestForObject) Generic(ctx context.Context, e event.GenericEvent, q workqueue.RateLimitingInterface) {
 	h.logEvent("Generic", e.Object)
-	h.EnqueueRequestForObject.Generic(ctx, e, q)
+	h.InstrumentedEnqueueRequestForObject.Generic(ctx, e, q)
 }
 
 func (h LoggingEnqueueRequestForObject) logEvent(eventType string, object client.Object) {
