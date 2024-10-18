@@ -37,6 +37,7 @@ import (
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	"github.com/operator-framework/ansible-operator-plugins/internal/ansible/handler"
@@ -238,9 +239,9 @@ func addWatchToController(owner kubeconfig.NamespacedOwnerReference, cMap *contr
 			owMap.Store(resource.GroupVersionKind())
 			log.Info("Watching child resource", "kind", resource.GroupVersionKind(),
 				"enqueue_kind", u.GroupVersionKind())
-			err := contents.Controller.Watch(source.Kind(cache, resource),
+			err := contents.Controller.Watch(source.Kind(cache, client.Object(resource),
 				handler.EnqueueRequestForOwnerWithLogging(scheme, restMapper, u),
-				predicate.DependentPredicate{})
+				predicate.DependentPredicate{}))
 			// Store watch in map
 			if err != nil {
 				log.Error(err, "Failed to watch child resource",
@@ -260,9 +261,9 @@ func addWatchToController(owner kubeconfig.NamespacedOwnerReference, cMap *contr
 			}
 			log.Info("Watching child resource", "kind", resource.GroupVersionKind(),
 				"enqueue_annotation_type", ownerGK.String())
-			err = contents.Controller.Watch(source.Kind(cache, resource), &handler.LoggingEnqueueRequestForAnnotation{
-				EnqueueRequestForAnnotation: libhandler.EnqueueRequestForAnnotation{Type: ownerGK},
-			}, predicate.DependentPredicate{})
+			err = contents.Controller.Watch(source.Kind(cache, client.Object(resource), &handler.LoggingEnqueueRequestForAnnotation{
+				EnqueueRequestForAnnotation: libhandler.EnqueueRequestForAnnotation[client.Object]{Type: ownerGK},
+			}, predicate.DependentPredicate{}))
 			if err != nil {
 				log.Error(err, "Failed to watch child resource",
 					"kind", resource.GroupVersionKind(), "enqueue_kind", u.GroupVersionKind())

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e63c568c6a1a5baad183028ab2d4d4ada2843e9579b9ac788acf4ce33be34ae0"
+            "sha256": "725f016a9cc6bf956e8baffa1a3980f738c35d97671ad177a5c4e36703316ab1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,12 +18,12 @@
     "default": {
         "ansible-core": {
             "hashes": [
-                "sha256:44a1f30076796536ba2455cad18d36e62870f04e632e3ca2ebe970d7beacf24d",
-                "sha256:a36c9ab8e84d5d51f9fffe389d6ac7e81c8d0df6af8c12429ddbb71e8d69b21e"
+                "sha256:10f165b475cf2bc8d886e532cadb32c52ee6a533649793101d3166bca9bd3ea3",
+                "sha256:ae7f51fd13dc9d57c9bcd43ef23f9c255ca8f18f4b5c0011a4f9b724d92c5a8e"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==2.17.4"
+            "version": "==2.17.5"
         },
         "ansible-runner": {
             "hashes": [
@@ -309,12 +309,12 @@
         },
         "kubernetes": {
             "hashes": [
-                "sha256:ab8cb0e0576ccdfb71886366efb102c6a20f268d817be065ce7f9909c631e43e",
-                "sha256:c4812e227ae74d07d53c88293e564e54b850452715a59a927e7e1bc6b9a60459"
+                "sha256:41e4c77af9f28e7a6c314e3bd06a8c6229ddd787cad684e0ab9f69b498e98ebc",
+                "sha256:e212e8b7579031dd2e512168b617373bc1e03888d41ac4e04039240a292d478d"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==29.0.0"
+            "version": "==30.1.0"
         },
         "lockfile": {
             "hashes": [
@@ -560,11 +560,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:35ab7fd3bcd95e6b7fd704e4a1539513edad446c097797f2985e0e4b960772f2",
-                "sha256:d59a21b17a275fb872a9c3dae73963160ae079f1049ed956880cd7c09b120538"
+                "sha256:753bb6ebf1f465a1912e19ed1d41f403a79173a9acf66a42e7e6aec45c3c16ec",
+                "sha256:a7fcb66f68b4d9e8e66b42f9876150a3371558f98fa32222ffaa5bced76406f8"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==75.1.0"
+            "version": "==75.2.0"
         },
         "six": {
             "hashes": [

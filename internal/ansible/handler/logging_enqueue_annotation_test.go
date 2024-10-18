@@ -25,6 +25,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllertest"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -60,7 +61,7 @@ var _ = Describe("LoggingEnqueueRequestForAnnotation", func() {
 
 		Expect(handler.SetOwnerAnnotations(podOwner, pod)).To(Succeed())
 		instance = LoggingEnqueueRequestForAnnotation{
-			handler.EnqueueRequestForAnnotation{
+			handler.EnqueueRequestForAnnotation[client.Object]{
 				Type: schema.GroupKind{
 					Group: "",
 					Kind:  "Pod",
@@ -220,7 +221,11 @@ var _ = Describe("LoggingEnqueueRequestForAnnotation", func() {
 			}
 			nd.SetGroupVersionKind(schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Node"})
 
-			instance = LoggingEnqueueRequestForAnnotation{handler.EnqueueRequestForAnnotation{Type: schema.GroupKind{Group: "apps", Kind: "ReplicaSet"}}}
+			instance = LoggingEnqueueRequestForAnnotation{
+				handler.EnqueueRequestForAnnotation[client.Object]{
+					Type: schema.GroupKind{Group: "apps", Kind: "ReplicaSet"},
+				},
+			}
 
 			evt := event.CreateEvent{
 				Object: nd,
@@ -243,7 +248,11 @@ var _ = Describe("LoggingEnqueueRequestForAnnotation", func() {
 			}
 			nd.SetGroupVersionKind(schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Node"})
 
-			instance = LoggingEnqueueRequestForAnnotation{handler.EnqueueRequestForAnnotation{Type: nd.GetObjectKind().GroupVersionKind().GroupKind()}}
+			instance = LoggingEnqueueRequestForAnnotation{
+				handler.EnqueueRequestForAnnotation[client.Object]{
+					Type: nd.GetObjectKind().GroupVersionKind().GroupKind(),
+				},
+			}
 			evt := event.CreateEvent{
 				Object: nd,
 			}
@@ -341,11 +350,13 @@ var _ = Describe("LoggingEnqueueRequestForAnnotation", func() {
 			repl.SetGroupVersionKind(schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "ReplicaSet"})
 
 			instance = LoggingEnqueueRequestForAnnotation{
-				handler.EnqueueRequestForAnnotation{
+				handler.EnqueueRequestForAnnotation[client.Object]{
 					Type: schema.GroupKind{
 						Group: "apps",
 						Kind:  "ReplicaSet",
-					}}}
+					},
+				},
+			}
 
 			evt := event.CreateEvent{
 				Object: repl,
@@ -366,11 +377,13 @@ var _ = Describe("LoggingEnqueueRequestForAnnotation", func() {
 			}
 
 			instance2 := LoggingEnqueueRequestForAnnotation{
-				handler.EnqueueRequestForAnnotation{
+				handler.EnqueueRequestForAnnotation[client.Object]{
 					Type: schema.GroupKind{
 						Group: "apps",
 						Kind:  "ReplicaSet",
-					}}}
+					},
+				},
+			}
 
 			evt2 := event.UpdateEvent{
 				ObjectOld: repl,

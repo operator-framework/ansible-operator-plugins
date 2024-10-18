@@ -31,7 +31,7 @@ import (
 //
 //	&handler.LoggingEnqueueRequestForAnnotation{}
 type LoggingEnqueueRequestForAnnotation struct {
-	handler.EnqueueRequestForAnnotation
+	handler.EnqueueRequestForAnnotation[client.Object]
 }
 
 // Create implements EventHandler, and emits a log message.

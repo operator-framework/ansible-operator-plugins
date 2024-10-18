@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -125,7 +126,7 @@ func Add(mgr manager.Manager, options Options) *controller.Controller {
 
 	u := &unstructured.Unstructured{}
 	u.SetGroupVersionKind(options.GVK)
-	err = c.Watch(source.Kind(mgr.GetCache(), u), handler.LoggingEnqueueRequestForObject{}, predicates...)
+	err = c.Watch(source.Kind(mgr.GetCache(), client.Object(u), handler.LoggingEnqueueRequestForObject{}, predicates...))
 	if err != nil {
 		log.Error(err, "")
 		os.Exit(1)

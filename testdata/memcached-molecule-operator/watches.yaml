@@ -24,4 +24,4 @@
   kind: Secret
   role: secret
   manageStatus: false
-#+kubebuilder:scaffold:watch
+# +kubebuilder:scaffold:watch
