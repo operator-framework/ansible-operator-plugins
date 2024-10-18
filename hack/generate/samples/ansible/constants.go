@@ -531,7 +531,7 @@ const customMetricsTest = `
     namespace: default
     container: manager
     pod: "{{ output.resources[0].metadata.name }}"
-    command: curl localhost:8080/metrics
+    command: curl localhost:8443/metrics
   register: metrics_output
 
 - name: Assert sanity metrics were created

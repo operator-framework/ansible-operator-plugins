@@ -1,16 +1,4 @@
-# This patch adds the args to allow exposing the metrics endpoint securely
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: controller-manager
-  namespace: system
-spec:
-  template:
-    spec:
-      containers:
-      - name: manager
-        args:
-        - "--metrics-bind-address=0.0.0.0:8080"
-        - "--leader-elect"
-        - "--leader-election-id=memcached-molecule-operator"
-        - "--health-probe-bind-address=:6789"
+# This patch adds the args to allow exposing the metrics endpoint using HTTPS
+- op: add
+  path: /spec/template/spec/containers/0/args/0
+  value: --metrics-bind-address=:8443

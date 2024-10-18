@@ -160,7 +160,6 @@ func addInitCustomizations(projectName string) error {
 	}
 
 	managerFile := filepath.Join("config", "manager", "manager.yaml")
-	managerMetricsPatchFile := filepath.Join("config", "default", "manager_metrics_patch.yaml")
 
 	// todo: we ought to use afero instead. Replace this methods to insert/update
 	// by https://github.com/kubernetes-sigs/kubebuilder/pull/2119
@@ -170,13 +169,6 @@ func addInitCustomizations(projectName string) error {
 	err := util.InsertCode(managerFile,
 		"--leader-elect",
 		fmt.Sprintf("\n          - --leader-election-id=%s", projectName))
-	if err != nil {
-		return err
-	}
-
-	err = util.InsertCode(managerMetricsPatchFile,
-		"- \"--metrics-bind-address=0.0.0.0:8080\"",
-		fmt.Sprintf("\n        - \"--leader-elect\"\n        - \"--leader-election-id=%s\"\n        - \"--health-probe-bind-address=:6789\"", projectName))
 	if err != nil {
 		return err
 	}

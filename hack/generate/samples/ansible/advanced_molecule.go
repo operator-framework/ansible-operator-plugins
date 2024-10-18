@@ -70,6 +70,9 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 		"size: 3")
 	pkg.CheckError("updating spec of inventorytest sample", err)
 
+	//TODO: I think this needs to be removed, but then there are other failures when commented out that reference this file
+	// making it unclear the actual operator of operators for kustomize, scaffolding, and the test code manipulating the yaml files
+	// on disk
 	log.Info("enabling metrics in the manager")
 	err = kbutil.UncommentCode(
 		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
@@ -84,46 +87,47 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 }
 
 func updateConfig(dir string) {
-	log.Info("adding customized roles")
-	const cmRolesFragment = `  ##
-  ## Base operator rules
-  ##
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - namespaces
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - configmaps
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-#+kubebuilder:scaffold:rules`
-	err := kbutil.ReplaceInFile(
-		filepath.Join(dir, "config", "rbac", "role.yaml"),
-		"#+kubebuilder:scaffold:rules",
-		cmRolesFragment)
-	pkg.CheckError("adding customized roles", err)
+	//TODO: This currently fails, unsure if we still need this, seems the role file already has this
+	//log.Info("adding customized roles")
+	//	const cmRolesFragment = `  ##
+	//  ## Base operator rules
+	//  ##
+	//  - apiGroups:
+	//      - ""
+	//    resources:
+	//      - configmaps
+	//      - namespaces
+	//    verbs:
+	//      - create
+	//      - delete
+	//      - get
+	//      - list
+	//      - patch
+	//      - update
+	//      - watch
+	//  - apiGroups:
+	//      - apps
+	//    resources:
+	//      - configmaps
+	//    verbs:
+	//      - create
+	//      - delete
+	//      - get
+	//      - list
+	//      - patch
+	//      - update
+	//      - watch
+	//#+kubebuilder:scaffold:rules`
+	//err := kbutil.ReplaceInFile(
+	//	filepath.Join(dir, "config", "rbac", "role.yaml"),
+	//	"#+kubebuilder:scaffold:rules",
+	//	cmRolesFragment)
+	//pkg.CheckError("adding customized roles", err)
 
 	log.Info("adding manager arg")
 	const ansibleVaultArg = `
           - --ansible-args='--vault-password-file /opt/ansible/pwd.yml'`
-	err = kbutil.InsertCode(
+	err := kbutil.InsertCode(
 		filepath.Join(dir, "config", "manager", "manager.yaml"),
 		"- --leader-election-id=advanced-molecule-operator",
 		ansibleVaultArg)
@@ -145,8 +149,8 @@ func updateConfig(dir string) {
 	const managerAuthArgs = `
         - "--ansible-args='--vault-password-file /opt/ansible/pwd.yml'"`
 	err = kbutil.InsertCode(
-		filepath.Join(dir, "config", "default", "manager_metrics_patch.yaml"),
-		"- \"--leader-elect\"",
+		filepath.Join(dir, "config", "manager", "manager.yaml"),
+		"- --leader-elect",
 		managerAuthArgs)
 	pkg.CheckError("adding vaulting args to the proxy auth", err)
 
