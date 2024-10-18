@@ -130,7 +130,7 @@ func (f *FilterServer) HandlerFor(delegate http.Handler) *FilterServer {
 	return &f2
 }
 
-// Get host from a host header value like "localhost" or "localhost:8080"
+// Get host from a host header value like "localhost" or "localhost:8443"
 func extractHost(header string) (host string) {
 	host, _, err := net.SplitHostPort(header)
 	if err != nil {

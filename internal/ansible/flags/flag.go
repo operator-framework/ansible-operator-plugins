@@ -111,13 +111,13 @@ func (f *Flags) AddTo(flagSet *pflag.FlagSet) {
 	// TODO(2.0.0): remove
 	flagSet.StringVar(&f.MetricsBindAddress,
 		"metrics-addr",
-		":8080",
+		":8443",
 		"The address the metric endpoint binds to",
 	)
 	_ = flagSet.MarkDeprecated("metrics-addr", "use --metrics-bind-address instead")
 	flagSet.StringVar(&f.MetricsBindAddress,
 		"metrics-bind-address",
-		":8080",
+		":8443",
 		"The address the metric endpoint binds to",
 	)
 	// TODO(2.0.0): for Go/Helm the port used is: 8081

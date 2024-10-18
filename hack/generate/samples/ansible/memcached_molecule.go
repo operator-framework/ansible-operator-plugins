@@ -80,7 +80,7 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 
 	log.Info("adding RBAC permissions")
 	err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "config", "rbac", "role.yaml"),
-		"#+kubebuilder:scaffold:rules", rolesForBaseOperator)
+		"# +kubebuilder:scaffold:rules", rolesForBaseOperator)
 	pkg.CheckError("replacing in role.yml", err)
 
 	log.Info("adding task to delete config map")
@@ -127,6 +127,6 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 	log.Info("enabling metrics in the manager")
 	err = kbutil.UncommentCode(
 		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
-		"#- path: manager_metrics_patch.yaml", "#")
+		"- path: manager_metrics_patch.yaml", "#")
 	pkg.CheckError("enabling metrics endpoint", err)
 }

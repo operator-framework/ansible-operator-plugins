@@ -17,7 +17,7 @@ func GetMetrics(sample sample.Sample, kubectl kubernetes.Kubectl, metricsCluster
 	cmdOpts := []string{
 		"run", "curl", "--image=curlimages/curl:7.68.0", "--restart=OnFailure", "--",
 		"curl", "-v",
-		fmt.Sprintf("http://%s-controller-manager-metrics-service.%s.svc:8080/metrics", sample.Name(), kubectl.Namespace()),
+		fmt.Sprintf("http://%s-controller-manager-metrics-service.%s.svc:8443/metrics", sample.Name(), kubectl.Namespace()),
 	}
 	out, err := kubectl.CommandInNamespace(cmdOpts...)
 	fmt.Println("OUT --", out)
