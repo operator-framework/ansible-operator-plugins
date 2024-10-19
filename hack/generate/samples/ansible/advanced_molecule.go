@@ -136,15 +136,6 @@ func updateConfig(dir string) {
 		managerEnv)
 	pkg.CheckError("adding manager env", err)
 
-	log.Info("adding vaulting args to the proxy auth")
-	const managerAuthArgs = `
-        - "--ansible-args='--vault-password-file /opt/ansible/pwd.yml'"`
-	err = kbutil.InsertCode(
-		filepath.Join(dir, "config", "manager", "manager.yaml"),
-		"- --leader-elect",
-		managerAuthArgs)
-	pkg.CheckError("adding vaulting args to the proxy auth", err)
-
 	log.Info("adding task to not pull image to the config/testing")
 	err = kbutil.ReplaceInFile(
 		filepath.Join(dir, "config", "testing", "kustomization.yaml"),
