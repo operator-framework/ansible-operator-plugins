@@ -78,47 +78,46 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 }
 
 func updateConfig(dir string) {
-	//TODO: This currently fails, unsure if we still need this, seems the role file already has this
-	//log.Info("adding customized roles")
-	//	const cmRolesFragment = `  ##
-	//  ## Base operator rules
-	//  ##
-	//  - apiGroups:
-	//      - ""
-	//    resources:
-	//      - configmaps
-	//      - namespaces
-	//    verbs:
-	//      - create
-	//      - delete
-	//      - get
-	//      - list
-	//      - patch
-	//      - update
-	//      - watch
-	//  - apiGroups:
-	//      - apps
-	//    resources:
-	//      - configmaps
-	//    verbs:
-	//      - create
-	//      - delete
-	//      - get
-	//      - list
-	//      - patch
-	//      - update
-	//      - watch
-	//#+kubebuilder:scaffold:rules`
-	//err := kbutil.ReplaceInFile(
-	//	filepath.Join(dir, "config", "rbac", "role.yaml"),
-	//	"#+kubebuilder:scaffold:rules",
-	//	cmRolesFragment)
-	//pkg.CheckError("adding customized roles", err)
+	log.Info("adding customized roles")
+	const cmRolesFragment = `  ##
+  ## Base operator rules
+  ##
+  - apiGroups:
+ 	  - ""
+    resources:
+ 	  - configmaps
+ 	  - namespaces
+    verbs:
+ 	  - create
+ 	  - delete
+ 	  - get
+ 	  - list
+ 	  - patch
+ 	  - update
+ 	  - watch
+  - apiGroups:
+ 	  - apps
+    resources:
+ 	  - configmaps
+    verbs:
+ 	  - create
+ 	  - delete
+ 	  - get
+ 	  - list
+ 	  - patch
+ 	  - update
+ 	  - watch
+# +kubebuilder:scaffold:rules`
+	err := kbutil.ReplaceInFile(
+		filepath.Join(dir, "config", "rbac", "role.yaml"),
+		"# +kubebuilder:scaffold:rules",
+		cmRolesFragment)
+	pkg.CheckError("adding customized roles", err)
 
 	log.Info("adding manager arg")
 	const ansibleVaultArg = `
           - --ansible-args='--vault-password-file /opt/ansible/pwd.yml'`
-	err := kbutil.InsertCode(
+	err = kbutil.InsertCode(
 		filepath.Join(dir, "config", "manager", "manager.yaml"),
 		"- --leader-election-id=advanced-molecule-operator",
 		ansibleVaultArg)
