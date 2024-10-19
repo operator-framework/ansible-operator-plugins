@@ -70,15 +70,6 @@ func ImplementAdvancedMolecule(sample sample.Sample, image string) {
 		"size: 3")
 	pkg.CheckError("updating spec of inventorytest sample", err)
 
-	//TODO: I think this needs to be removed, but then there are other failures when commented out that reference this file
-	// making it unclear the actual operator of operators for kustomize, scaffolding, and the test code manipulating the yaml files
-	// on disk
-	log.Info("enabling metrics in the manager")
-	err = kbutil.UncommentCode(
-		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
-		"#- path: manager_metrics_patch.yaml", "#")
-	pkg.CheckError("enabling metrics endpoint", err)
-
 	removeFixmeFromPlaybooks(sample.Dir(), sample.GVKs())
 	updatePlaybooks(sample.Dir())
 	addMocksFromTestdata(sample.Dir(), sample.CommandContext())

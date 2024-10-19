@@ -124,9 +124,4 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 		fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
 	pkg.CheckError("inserting in kustomization.yaml", err)
 
-	log.Info("enabling metrics in the manager")
-	err = kbutil.UncommentCode(
-		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
-		"- path: manager_metrics_patch.yaml", "#")
-	pkg.CheckError("enabling metrics endpoint", err)
 }
