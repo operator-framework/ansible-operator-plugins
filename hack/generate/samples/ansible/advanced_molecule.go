@@ -148,8 +148,8 @@ func updateConfig(dir string) {
 	log.Info("adding task to not pull image to the config/testing")
 	err = kbutil.ReplaceInFile(
 		filepath.Join(dir, "config", "testing", "kustomization.yaml"),
-		"- manager_image.yaml",
-		"- manager_image.yaml\n- pull_policy/Never.yaml")
+		"- path: manager_image.yaml",
+		"- path: manager_image.yaml\n- path: pull_policy/Never.yaml")
 	pkg.CheckError("adding task to not pull image to the config/testing", err)
 }
 

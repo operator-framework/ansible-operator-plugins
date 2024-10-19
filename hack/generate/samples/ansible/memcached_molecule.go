@@ -120,8 +120,8 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 	pkg.CheckError("adding watch_namespace_patch.yaml", err)
 
 	log.Info("adding WATCH_NAMESPACE env patch to patch list to be applied")
-	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patchesStrategicMerge:",
-		fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
+	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patches:",
+		fmt.Sprintf("\n- path: %s", watchNamespacePatchFileName))
 	pkg.CheckError("inserting in kustomization.yaml", err)
 
 }
