@@ -83,31 +83,31 @@ func updateConfig(dir string) {
   ## Base operator rules
   ##
   - apiGroups:
- 	  - ""
+      - ""
     resources:
- 	  - configmaps
- 	  - namespaces
+      - configmaps
+      - namespaces
     verbs:
- 	  - create
- 	  - delete
- 	  - get
- 	  - list
- 	  - patch
- 	  - update
- 	  - watch
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
- 	  - apps
+      - apps
     resources:
- 	  - configmaps
+      - configmaps
     verbs:
- 	  - create
- 	  - delete
- 	  - get
- 	  - list
- 	  - patch
- 	  - update
- 	  - watch
-# +kubebuilder:scaffold:rules`
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+#+kubebuilder:scaffold:rules`
 	err := kbutil.ReplaceInFile(
 		filepath.Join(dir, "config", "rbac", "role.yaml"),
 		"# +kubebuilder:scaffold:rules",
