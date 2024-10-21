@@ -24,6 +24,7 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 // LoggingEnqueueRequestForAnnotation wraps operator-lib handler for
@@ -35,25 +36,25 @@ type LoggingEnqueueRequestForAnnotation struct {
 }
 
 // Create implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForAnnotation) Create(ctx context.Context, e event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForAnnotation) Create(ctx context.Context, e event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Create", e.Object, nil)
 	h.EnqueueRequestForAnnotation.Create(ctx, e, q)
 }
 
 // Update implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForAnnotation) Update(ctx context.Context, e event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForAnnotation) Update(ctx context.Context, e event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Update", e.ObjectOld, e.ObjectNew)
 	h.EnqueueRequestForAnnotation.Update(ctx, e, q)
 }
 
 // Delete implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForAnnotation) Delete(ctx context.Context, e event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForAnnotation) Delete(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Delete", e.Object, nil)
 	h.EnqueueRequestForAnnotation.Delete(ctx, e, q)
 }
 
 // Generic implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForAnnotation) Generic(ctx context.Context, e event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForAnnotation) Generic(ctx context.Context, e event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Generic", e.Object, nil)
 	h.EnqueueRequestForAnnotation.Generic(ctx, e, q)
 }

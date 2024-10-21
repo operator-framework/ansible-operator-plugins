@@ -90,7 +90,7 @@ type enqueueRequestForOwner struct {
 }
 
 // Create implements EventHandler.
-func (e *enqueueRequestForOwner) Create(ctx context.Context, evt event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (e *enqueueRequestForOwner) Create(_ context.Context, evt event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	e.logEvent("Create", evt.Object, nil)
 	reqs := map[reconcile.Request]empty{}
 	e.getOwnerReconcileRequest(evt.Object, reqs)
@@ -100,7 +100,7 @@ func (e *enqueueRequestForOwner) Create(ctx context.Context, evt event.CreateEve
 }
 
 // Update implements EventHandler.
-func (e *enqueueRequestForOwner) Update(ctx context.Context, evt event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (e *enqueueRequestForOwner) Update(_ context.Context, evt event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	e.logEvent("Update", evt.ObjectOld, evt.ObjectNew)
 	reqs := map[reconcile.Request]empty{}
 	e.getOwnerReconcileRequest(evt.ObjectOld, reqs)
@@ -111,7 +111,7 @@ func (e *enqueueRequestForOwner) Update(ctx context.Context, evt event.UpdateEve
 }
 
 // Delete implements EventHandler.
-func (e *enqueueRequestForOwner) Delete(ctx context.Context, evt event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (e *enqueueRequestForOwner) Delete(_ context.Context, evt event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	e.logEvent("Delete", evt.Object, nil)
 	reqs := map[reconcile.Request]empty{}
 	e.getOwnerReconcileRequest(evt.Object, reqs)
@@ -121,7 +121,7 @@ func (e *enqueueRequestForOwner) Delete(ctx context.Context, evt event.DeleteEve
 }
 
 // Generic implements EventHandler.
-func (e *enqueueRequestForOwner) Generic(ctx context.Context, evt event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (e *enqueueRequestForOwner) Generic(_ context.Context, evt event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	e.logEvent("Generic", evt.Object, nil)
 	reqs := map[reconcile.Request]empty{}
 	e.getOwnerReconcileRequest(evt.Object, reqs)
