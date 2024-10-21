@@ -7,7 +7,7 @@ import (
 
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/kubernetes"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
+	kbutil "sigs.k8s.io/kubebuilder/v4/pkg/plugin/util"
 )
 
 // BuildOperatorImage will build an operator image by running `make docker-build IMG=<image>`

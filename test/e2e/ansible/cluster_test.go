@@ -24,7 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	kbtutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
+	kbtutil "sigs.k8s.io/kubebuilder/v4/pkg/plugin/util"
 
 	"github.com/operator-framework/ansible-operator-plugins/internal/testutils"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/e2e/metrics"

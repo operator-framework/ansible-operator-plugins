@@ -18,19 +18,20 @@ import (
 	"os"
 	"path/filepath"
 
+	log "github.com/sirupsen/logrus"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"sigs.k8s.io/kubebuilder/v4/pkg/cli"
+	cfgv3 "sigs.k8s.io/kubebuilder/v4/pkg/config/v3"
+	"sigs.k8s.io/kubebuilder/v4/pkg/plugin"
+	kustomizev2 "sigs.k8s.io/kubebuilder/v4/pkg/plugins/common/kustomize/v2"
+	"sigs.k8s.io/kubebuilder/v4/pkg/plugins/golang"
+
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/pkg"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/e2e"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
 	samplecli "github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample/cli"
-	log "github.com/sirupsen/logrus"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"sigs.k8s.io/kubebuilder/v3/pkg/cli"
-	cfgv3 "sigs.k8s.io/kubebuilder/v3/pkg/config/v3"
-	"sigs.k8s.io/kubebuilder/v3/pkg/plugin"
-	kustomizev2 "sigs.k8s.io/kubebuilder/v3/pkg/plugins/common/kustomize/v2"
-	"sigs.k8s.io/kubebuilder/v3/pkg/plugins/golang"
 )
 
 const bundleImage = "quay.io/example/memcached-operator:v0.0.1"

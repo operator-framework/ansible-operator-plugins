@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
+	kbutil "sigs.k8s.io/kubebuilder/v4/pkg/plugin/util"
 
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/pkg"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
@@ -80,7 +80,7 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 
 	log.Info("adding RBAC permissions")
 	err = kbutil.ReplaceInFile(filepath.Join(sample.Dir(), "config", "rbac", "role.yaml"),
-		"#+kubebuilder:scaffold:rules", rolesForBaseOperator)
+		"# +kubebuilder:scaffold:rules", rolesForBaseOperator)
 	pkg.CheckError("replacing in role.yml", err)
 
 	log.Info("adding task to delete config map")
@@ -120,13 +120,8 @@ func ImplementMemcachedMolecule(sample sample.Sample, image string) {
 	pkg.CheckError("adding watch_namespace_patch.yaml", err)
 
 	log.Info("adding WATCH_NAMESPACE env patch to patch list to be applied")
-	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patchesStrategicMerge:",
-		fmt.Sprintf("\n- %s", watchNamespacePatchFileName))
+	err = kbutil.InsertCode(filepath.Join(sample.Dir(), "config", "testing", "kustomization.yaml"), "patches:",
+		fmt.Sprintf("\n- path: %s", watchNamespacePatchFileName))
 	pkg.CheckError("inserting in kustomization.yaml", err)
 
-	log.Info("enabling metrics in the manager")
-	err = kbutil.UncommentCode(
-		filepath.Join(sample.Dir(), "config", "default", "kustomization.yaml"),
-		"#- path: manager_metrics_patch.yaml", "#")
-	pkg.CheckError("enabling metrics endpoint", err)
 }

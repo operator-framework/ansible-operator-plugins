@@ -27,8 +27,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	kbutil "sigs.k8s.io/kubebuilder/v3/pkg/plugin/util"
-
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/ansible"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/e2e/kind"
@@ -36,6 +34,7 @@ import (
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/e2e/prometheus"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/kubernetes"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
+	kbutil "sigs.k8s.io/kubebuilder/v4/pkg/plugin/util"
 )
 
 //TODO: update this to use the new PoC api
@@ -79,8 +78,8 @@ var _ = BeforeSuite(func() {
 	// ---------------------------------------------------
 
 	By("enabling debug logging in the manager")
-	err = kbutil.ReplaceInFile(filepath.Join(ansibleSample.Dir(), "config", "default", "manager_metrics_patch.yaml"),
-		"- \"--leader-elect\"", "- \"--zap-log-level=2\"\n        - \"--leader-elect\"")
+	err = kbutil.InsertCode(filepath.Join(ansibleSample.Dir(), "config", "manager", "manager.yaml"),
+		"--health-probe-bind-address=:6789", "\n          - --zap-log-level=2")
 	Expect(err).NotTo(HaveOccurred())
 
 	// ---------------------------------------------------
