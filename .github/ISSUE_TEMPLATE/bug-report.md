@@ -30,14 +30,6 @@ Note: Make sure to first check the prerequisites that can be found in the main R
 
 #### Environment
 
-**Operator type:**
-
-<!-- Uncomment one or more of the following lines corresponding to the language of the operator type -->
-
-<!-- /language go -->
-<!-- /language ansible -->
-<!-- /language helm -->
-
 **Kubernetes cluster type:**
 
 <!-- The type of cluster used for testing/deployment, ex. "vanilla", "OpenShift" -->
