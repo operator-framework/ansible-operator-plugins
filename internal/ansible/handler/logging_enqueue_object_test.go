@@ -32,14 +32,14 @@ import (
 )
 
 var _ = Describe("LoggingEnqueueRequestForObject", func() {
-	var q workqueue.RateLimitingInterface
+	var q workqueue.TypedRateLimitingInterface[reconcile.Request]
 	var instance LoggingEnqueueRequestForObject
 	var pod *corev1.Pod
 	var ctx = context.TODO()
 
 	BeforeEach(func() {
 		logBuffer.Reset()
-		q = &controllertest.Queue{Interface: workqueue.New()}
+		q = &controllertest.TypedQueue[reconcile.Request]{TypedInterface: workqueue.NewTyped[reconcile.Request]()}
 		instance = LoggingEnqueueRequestForObject{}
 		pod = &corev1.Pod{
 			TypeMeta: metav1.TypeMeta{
