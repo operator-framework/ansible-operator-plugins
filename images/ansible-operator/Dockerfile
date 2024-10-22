@@ -34,8 +34,11 @@ RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
   #  - https://data.safetycli.com/v/70612/97c/ \
   # NOTE: This ignored vulnerability (71064) was detected in requests, \
   # but the upgraded version doesn't support the use case (protocol we are using).\
-  # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688
-  && pipenv check --ignore 70612 --ignore 71064 \
+  # Ref: https://github.com/operator-framework/ansible-operator-plugins/pull/67#issuecomment-2189164688 \
+  # NOTE: This ignored vulnerability (73302) was detected in ansible-core, \
+  # but hasn't been fixed upstream yet.\
+  # Ref: https://github.com/operator-framework/ansible-operator-plugins/issues/109 \
+  && pipenv check --ignore 70612 --ignore 71064 --ignore 73302 \
   && dnf remove -y gcc libffi-devel openssl-devel python3.12-devel \
   && dnf clean all \
   && rm -rf /var/cache/dnf
