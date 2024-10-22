@@ -21,8 +21,3 @@ I have an issue when ...
 
 <!-- A clear and concise description of what you want to happen. Add any considered drawbacks. -->
 
-<!-- If your request relates to a particular operator type, uncomment one or more of the following lines corresponding to the language of that type -->
-
-<!-- /language go -->
-<!-- /language ansible -->
-<!-- /language helm -->
