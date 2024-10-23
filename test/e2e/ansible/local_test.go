@@ -15,6 +15,7 @@
 package e2e_ansible_test
 
 import (
+	"os"
 	"os/exec"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -24,19 +25,30 @@ import (
 
 var _ = Describe("Running Ansible projects", func() {
 	Context("built with operator-sdk", func() {
+		var (
+			skip_local_test string
+		)
 		BeforeEach(func() {
-			By("Installing CRD's")
-			err := operator.InstallCRDs(ansibleSample)
-			Expect(err).NotTo(HaveOccurred())
+			skip_local_test = os.Getenv(SKIP_LOCAL_TEST)
+			if skip_local_test == "" {
+				By("Installing CRD's")
+				err := operator.InstallCRDs(ansibleSample)
+				Expect(err).NotTo(HaveOccurred())
+			}
 		})
 
 		AfterEach(func() {
-			By("Uninstalling CRD's")
-			err := operator.UninstallCRDs(ansibleSample)
-			Expect(err).NotTo(HaveOccurred())
+			if skip_local_test == "" {
+				By("Uninstalling CRD's")
+				err := operator.UninstallCRDs(ansibleSample)
+				Expect(err).NotTo(HaveOccurred())
+			}
 		})
 
 		It("Should run correctly when run locally", func() {
+			if skip_local_test != "" {
+				Skip("Skipping local test")
+			}
 			By("Running the project")
 			cmd := exec.Command("make", "run")
 			cmd.Dir = ansibleSample.Dir()

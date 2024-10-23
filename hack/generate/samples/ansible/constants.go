@@ -518,6 +518,25 @@ const rolesForBaseOperator = `
       - watch
 #+kubebuilder:scaffold:rules
 `
+const rolesForProject = `
+  ##
+  ## Apply customize roles related to project.openshift.io
+  ##
+  - apiGroups:
+      - project.openshift.io
+    resources:
+      - projectrequests
+      - projects
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+#+kubebuilder:scaffold:rules
+`
 
 const customMetricsTest = `
 - name: Search for all running pods
