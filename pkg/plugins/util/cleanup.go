@@ -59,15 +59,6 @@ func RemoveKustomizeCRDManifests() error {
 // that are either not used by certain Init plugins or are created by preceding Init plugins.
 func UpdateKustomizationsInit() error {
 	defaultKFile := filepath.Join("config", "default", "kustomization.yaml")
-	if err := kbutil.ReplaceInFile(defaultKFile,
-		`
-# [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
-# crd/kustomization.yaml
-#- ../webhook
-# [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER'. 'WEBHOOK' components are required.
-#- ../certmanager`, ""); err != nil {
-		return fmt.Errorf("remove %s resources: %v", defaultKFile, err)
-	}
 
 	if err := kbutil.ReplaceInFile(defaultKFile,
 		`
