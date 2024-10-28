@@ -14,8 +14,25 @@ import (
 // GetMetrics creates a pod with the permissions to `curl` metrics. It will then return the output of the `curl` pod
 func GetMetrics(sample sample.Sample, kubectl kubernetes.Kubectl, metricsClusterRoleBindingName string) string {
 	ginkgo.By("creating a curl pod")
+	securityContext := `
+{
+	"apiVersion": "v1",
+	"spec": {
+		"securityContext": {
+			"runAsNonRoot": true,
+			"runAsUser": 1000,
+			"runAsGroup": 1000,
+			"fsGroup": 1000,
+			"seccompProfile": {
+				"type": "RuntimeDefault"
+			}
+		}
+	}
+}
+`
+	overrides := fmt.Sprintf("--overrides=%s", securityContext)
 	cmdOpts := []string{
-		"run", "curl", "--image=curlimages/curl:7.68.0", "--restart=OnFailure", "--",
+		"run", "curl", "--image=curlimages/curl:7.68.0", "--restart=OnFailure", overrides, "--",
 		"curl", "-v",
 		fmt.Sprintf("http://%s-controller-manager-metrics-service.%s.svc:8443/metrics", sample.Name(), kubectl.Namespace()),
 	}

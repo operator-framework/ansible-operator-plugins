@@ -107,6 +107,23 @@ rules:
       - watch
 
   ##
+  ## Apply customize roles related to project.openshift.io
+  ##
+  - apiGroups:
+      - project.openshift.io
+    resources:
+      - projectrequests
+      - projects
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+
+  ##
   ## Apply customize roles for base operator
   ##
   - apiGroups:
@@ -123,4 +140,5 @@ rules:
       - update
       - watch
 #+kubebuilder:scaffold:rules
+
 
