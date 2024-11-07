@@ -75,6 +75,12 @@ func NewCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run the operator",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if cmd.Flag("metrics-require-rbac").Value.String() == "true" && cmd.Flag("metrics-secure").Value.String() == "false" {
+				return errors.New("--metrics-secure flag is required when --metrics-require-rbac is present")
+			}
+			return nil
+		},
 		Run: func(cmd *cobra.Command, _ []string) {
 			logf.SetLogger(zapf.New(zapf.UseFlagOptions(opts)))
 			run(cmd, f)

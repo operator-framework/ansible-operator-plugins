@@ -160,6 +160,7 @@ func addInitCustomizations(projectName string) error {
 	}
 
 	managerFile := filepath.Join("config", "manager", "manager.yaml")
+	managerMetricsPatch := filepath.Join("config", "default", "manager_metrics_patch.yaml")
 
 	// todo: we ought to use afero instead. Replace this methods to insert/update
 	// by https://github.com/kubernetes-sigs/kubebuilder/pull/2119
@@ -169,6 +170,27 @@ func addInitCustomizations(projectName string) error {
 	err := util.InsertCode(managerFile,
 		"--leader-elect",
 		fmt.Sprintf("\n          - --leader-election-id=%s", projectName))
+	if err != nil {
+		return err
+	}
+
+	// Enable the proper auth/metrics flags
+	err = util.ReplaceInFile(managerMetricsPatch,
+		`# This patch adds the args to allow exposing the metrics endpoint using HTTPS
+- op: add
+  path: /spec/template/spec/containers/0/args/0
+  value: --metrics-bind-address=:8443`, `# This patch adds the args to allow exposing the metrics endpoint using HTTPS
+- op: add
+  path: /spec/template/spec/containers/0/args/0
+  value: --metrics-bind-address=:8443
+# This patch adds the args to allow securing the metrics endpoint
+- op: add
+  path: /spec/template/spec/containers/0/args/0
+  value: --metrics-secure
+# This patch adds the args to allow RBAC-based authn/authz the metrics endpoint
+- op: add
+  path: /spec/template/spec/containers/0/args/0
+  value: --metrics-require-rbac`)
 	if err != nil {
 		return err
 	}
