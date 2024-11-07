@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/pflag"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
@@ -48,6 +49,7 @@ type Flags struct {
 	ProxyPort                  int
 	EnableHTTP2                bool
 	SecureMetrics              bool
+	MetricsRequireRBAC         bool
 
 	// If not nil, used to deduce which flags were set in the CLI.
 	flagSet *pflag.FlagSet
@@ -194,12 +196,16 @@ func (f *Flags) AddTo(flagSet *pflag.FlagSet) {
 		false,
 		"enables HTTP/2 on the webhook and metrics servers",
 	)
-
 	flagSet.BoolVar(&f.SecureMetrics,
 		"metrics-secure",
 		false,
 		"enables secure serving of the metrics endpoint",
 	)
+	flagSet.BoolVar(&f.MetricsRequireRBAC,
+		"metrics-require-rbac",
+		false,
+		"enables protection of the metrics endpoint with RBAC-based authn/authz."+
+			"see https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.18.4/pkg/metrics/filters#WithAuthenticationAndAuthorization for more info")
 }
 
 // ToManagerOptions uses the flag set in f to configure options.
@@ -254,5 +260,14 @@ func (f *Flags) ToManagerOptions(options manager.Options) manager.Options {
 		options.Metrics.TLSOpts = append(options.Metrics.TLSOpts, disableHTTP2)
 	}
 	options.Metrics.SecureServing = f.SecureMetrics
+
+	if f.MetricsRequireRBAC {
+		// FilterProvider is used to protect the metrics endpoint with authn/authz.
+		// These configurations ensure that only authorized users and service accounts
+		// can access the metrics endpoint. The RBAC are configured in 'config/rbac/kustomization.yaml'. More info:
+		// https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.18.4/pkg/metrics/filters#WithAuthenticationAndAuthorization
+		options.Metrics.FilterProvider = filters.WithAuthenticationAndAuthorization
+	}
+
 	return options
 }
