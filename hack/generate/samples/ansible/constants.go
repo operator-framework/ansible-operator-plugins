@@ -516,6 +516,17 @@ const rolesForBaseOperator = `
       - patch
       - update
       - watch
+  ##
+  ## Apply metrics_reader role for testing
+  ## This should align with metrics_reader.yaml
+  ## scaffolded by kubebuilder, but by default
+  ## that role is not applied to the generated
+  ## controller, so we apply it here.
+  ##
+  - nonResourceURLs:
+    - "/metrics"
+    verbs:
+    - get
 #+kubebuilder:scaffold:rules
 `
 
@@ -526,12 +537,14 @@ const customMetricsTest = `
     label_selectors:
       - "control-plane = controller-manager"
   register: output
+
 - name: Curl the metrics from the manager
   kubernetes.core.k8s_exec:
-    namespace: default
+    namespace: "{{ output.resources[0].metadata.namespace }}"
     container: manager
     pod: "{{ output.resources[0].metadata.name }}"
-    command: curl localhost:8443/metrics
+    command: >
+      bash -c 'curl -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://localhost:8443/metrics'
   register: metrics_output
 
 - name: Assert sanity metrics were created

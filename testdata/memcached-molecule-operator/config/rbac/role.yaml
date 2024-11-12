@@ -122,5 +122,16 @@ rules:
       - patch
       - update
       - watch
+  ##
+  ## Apply metrics_reader role for testing
+  ## This should align with metrics_reader.yaml
+  ## scaffolded by kubebuilder, but by default
+  ## that role is not applied to the generated
+  ## controller, so we apply it here.
+  ##
+  - nonResourceURLs:
+    - "/metrics"
+    verbs:
+    - get
 #+kubebuilder:scaffold:rules
 

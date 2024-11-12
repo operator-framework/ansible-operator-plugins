@@ -57,6 +57,9 @@ var _ = Describe("Running ansible projects", func() {
 		})
 
 		AfterEach(func() {
+			By("deleting curl pod")
+			testutils.WrapWarnOutput(kctl.Delete(false, "pod", "curl"))
+
 			By("cleaning up metrics")
 			Expect(metrics.CleanUpMetrics(kctl, metricsClusterRoleBindingName)).To(Succeed())
 
