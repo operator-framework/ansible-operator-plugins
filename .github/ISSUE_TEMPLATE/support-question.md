@@ -40,14 +40,6 @@ We will try our best to answer the question, but we also have a mailing list and
 
 #### Environment
 
-**Operator type:**
-
-<!-- Uncomment one or more of the following lines corresponding to the language of the operator type -->
-
-<!-- /language go -->
-<!-- /language ansible -->
-<!-- /language helm -->
-
 **Kubernetes cluster type:**
 
 <!-- The type of cluster used for testing/deployment, ex. "vanilla", "OpenShift" -->
