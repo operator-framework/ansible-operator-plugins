@@ -21,6 +21,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 var log = logf.Log.WithName("ansible").WithName("handler")
@@ -34,25 +35,25 @@ type LoggingEnqueueRequestForObject struct {
 }
 
 // Create implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForObject) Create(ctx context.Context, e event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForObject) Create(ctx context.Context, e event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Create", e.Object)
 	h.InstrumentedEnqueueRequestForObject.Create(ctx, e, q)
 }
 
 // Update implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForObject) Update(ctx context.Context, e event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForObject) Update(ctx context.Context, e event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Update", e.ObjectOld)
 	h.InstrumentedEnqueueRequestForObject.Update(ctx, e, q)
 }
 
 // Delete implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForObject) Delete(ctx context.Context, e event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForObject) Delete(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Delete", e.Object)
 	h.InstrumentedEnqueueRequestForObject.Delete(ctx, e, q)
 }
 
 // Generic implements EventHandler, and emits a log message.
-func (h LoggingEnqueueRequestForObject) Generic(ctx context.Context, e event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (h LoggingEnqueueRequestForObject) Generic(ctx context.Context, e event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.logEvent("Generic", e.Object)
 	h.InstrumentedEnqueueRequestForObject.Generic(ctx, e, q)
 }
