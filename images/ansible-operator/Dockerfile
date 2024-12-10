@@ -2,7 +2,7 @@
 # It is built with dependencies that take a while to download, thus speeding
 # up ansible deploy jobs.
 
-FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 AS basebuilder
+FROM registry.access.redhat.com/ubi9/ubi:9.5 AS basebuilder
 
 # Install Rust so that we can ensure backwards compatibility with installing/building the cryptography wheel across all platforms
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -43,7 +43,7 @@ RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
   && dnf clean all \
   && rm -rf /var/cache/dnf
 
-FROM registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543 AS base
+FROM registry.access.redhat.com/ubi9/ubi:9.5 AS base
 ARG TARGETARCH
 
 # Label this image with the repo and commit that built it, for freshmaking purposes.
