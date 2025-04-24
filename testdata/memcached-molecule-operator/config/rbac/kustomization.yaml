@@ -18,16 +18,20 @@ resources:
 - metrics_auth_role.yaml
 - metrics_auth_role_binding.yaml
 - metrics_reader_role.yaml
-# For each CRD, "Editor" and "Viewer" roles are scaffolded by
+# For each CRD, "Admin", "Editor" and "Viewer" roles are scaffolded by
 # default, aiding admins in cluster management. Those roles are
-# not used by the Project itself. You can comment the following lines
+# not used by the {{ .ProjectName }} itself. You can comment the following lines
 # if you do not want those helpers be installed with your Project.
+- ignore_secret_admin_role.yaml
 - ignore_secret_editor_role.yaml
 - ignore_secret_viewer_role.yaml
+- memfin_admin_role.yaml
 - memfin_editor_role.yaml
 - memfin_viewer_role.yaml
+- foo_admin_role.yaml
 - foo_editor_role.yaml
 - foo_viewer_role.yaml
+- memcached_admin_role.yaml
 - memcached_editor_role.yaml
 - memcached_viewer_role.yaml
 
