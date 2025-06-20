@@ -255,7 +255,7 @@ func (r *AnsibleOperatorReconciler) Reconcile(ctx context.Context, request recon
 		}
 	} else if recentlyDeleted && finalizerExists {
 		// If the CR was deleted after the reconcile began, we need to requeue for the finalizer.
-		reconcileResult.Requeue = true
+		reconcileResult.RequeueAfter = 5 * time.Second
 	}
 	if r.ManageStatus {
 		errmark := r.markDone(ctx, request.NamespacedName, u, statusEvent, failureMessages)
