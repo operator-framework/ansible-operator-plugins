@@ -4,7 +4,7 @@
 # More info: https://book.kubebuilder.io/reference/project-config.html
 domain: example.com
 layout:
-- base.ansible.sdk.operatorframework.io/v1
+- ansible.operatorframework.io/v1
 multigroup: true
 projectName: memcached-molecule-operator
 resources:

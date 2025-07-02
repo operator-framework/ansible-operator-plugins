@@ -18,11 +18,9 @@ import (
 	"sigs.k8s.io/kubebuilder/v4/pkg/config"
 	cfgv3 "sigs.k8s.io/kubebuilder/v4/pkg/config/v3"
 	"sigs.k8s.io/kubebuilder/v4/pkg/plugin"
-
-	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins"
 )
 
-const pluginName = "base.ansible" + plugins.DefaultNameQualifier
+const pluginName = "ansible.operatorframework.io"
 
 var (
 	pluginVersion            = plugin.Version{Number: 1}
