@@ -21,6 +21,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	"github.com/operator-framework/ansible-operator-plugins/internal/cmd/ansible-operator/run"
+	"github.com/operator-framework/ansible-operator-plugins/internal/cmd/ansible-operator/scaffold"
 	"github.com/operator-framework/ansible-operator-plugins/internal/cmd/ansible-operator/version"
 )
 
@@ -36,6 +37,7 @@ operator project's image entrypoint
 
 	root.AddCommand(run.NewCmd())
 	root.AddCommand(version.NewCmd())
+	root.AddCommand(scaffold.NewCmd())
 
 	if err := root.Execute(); err != nil {
 		log.Fatal(err)
