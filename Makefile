@@ -71,16 +71,16 @@ clean: ## Cleanup build artifacts and tool binaries.
 ##@ Build
 
 .PHONY: install
-install: ## Install ansible-operator
-	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go install $(GO_BUILD_ARGS) ./cmd/ansible-operator
+install: ## Install ansible-operator and ansible-cli.
+	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go install $(GO_BUILD_ARGS) ./cmd/{ansible-operator,ansible-cli}
 
 .PHONY: build
-build: ## Build ansible-operator
+build: ## Build ansible-operator and ansible-cli.
 	@mkdir -p $(BUILD_DIR)
-	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go build $(GO_BUILD_ARGS) -o $(BUILD_DIR) ./cmd/ansible-operator
+	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go build $(GO_BUILD_ARGS) -o $(BUILD_DIR) ./cmd/{ansible-operator,ansible-cli}
 
-.PHONY: build/ansible-operator
-build/ansible-operator:
+.PHONY: build/ansible-operator build/ansible-cli
+build/ansible-operator build/ansible-cli:
 	GOOS=$(BUILD_GOOS) GOARCH=$(BUILD_GOARCH) go build $(GO_BUILD_ARGS) -o $(BUILD_DIR)/$(@F) ./cmd/$(@F)
 
 ##@ Dev image build

@@ -6,6 +6,7 @@
 /dist
 **/bin/
 ansible-operator
+ansible-cli
 
 # Test artifacts
 **/testbin/
