@@ -42,8 +42,8 @@
   register: cr
   retries: 10
   delay: 6
-  until: not cr.resources
-  failed_when: cr.resources
+  until: cr.resources | length == 0
+  failed_when: cr.resources | length > 0
 
 - name: Retrive the cm
   k8s_info:
