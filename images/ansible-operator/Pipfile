@@ -7,7 +7,7 @@ name = "pypi"
 ansible-runner = "~=2.4.0"
 ansible-runner-http = "~=1.0.0"
 ansible-core = "~=2.18.3"
-urllib3 = "~=1.26.2"
+urllib3 = "~=2.5.0"
 kubernetes = "==33.1.0"
 requests = "~=2.31.0"
 
