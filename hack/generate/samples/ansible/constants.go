@@ -314,8 +314,8 @@ const moleculeTaskFragment = `- name: Load CR
   register: cr
   retries: 10
   delay: 6
-  until: not cr.resources
-  failed_when: cr.resources
+  until: cr.resources | length == 0
+  failed_when: cr.resources | length > 0
 
 - name: Verify the Deployment was deleted (wait 30s)
   assert:
@@ -342,7 +342,7 @@ const testSecretMoleculeCheck = `
 # This will verify that the secret role was executed
 - name: Verify that test-service was created
   assert:
-    that: lookup('k8s', kind='Service', api_version='v1', namespace=namespace, resource_name='test-service')
+    that: lookup('k8s', kind='Service', api_version='v1', namespace=namespace, resource_name='test-service') is not none
 `
 
 const testFooMoleculeCheck = `
