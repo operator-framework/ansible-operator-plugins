@@ -3,7 +3,7 @@ before:
     - go mod tidy
     - go mod download
 builds:
-  - id: binary
+  - id: linux-binary
     main: ./cmd/ansible-operator/
     binary: ansible-operator
     asmflags: "{{ .Env.GO_BUILD_ASMFLAGS }}"
@@ -17,6 +17,18 @@ builds:
     - arm64
     - ppc64le
     - s390x
+  - id: darwin-binary
+    main: ./cmd/ansible-operator/
+    binary: ansible-operator
+    asmflags: "{{ .Env.GO_BUILD_ASMFLAGS }}"
+    gcflags: "{{ .Env.GO_BUILD_GCFLAGS }}"
+    ldflags: "{{ .Env.GO_BUILD_LDFLAGS }}"
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    goos:
+    - darwin
+    goarch:
+    - amd64
+    - arm64
 dockers:
 - image_templates:
   - "{{ .Env.IMAGE_REPO }}:{{ .Env.IMAGE_TAG }}-amd64"
