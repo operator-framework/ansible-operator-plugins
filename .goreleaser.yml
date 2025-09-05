@@ -3,9 +3,23 @@ before:
     - go mod tidy
     - go mod download
 builds:
-  - id: binary
+  - id: ansible-operator
     main: ./cmd/ansible-operator/
     binary: ansible-operator
+    asmflags: "{{ .Env.GO_BUILD_ASMFLAGS }}"
+    gcflags: "{{ .Env.GO_BUILD_GCFLAGS }}"
+    ldflags: "{{ .Env.GO_BUILD_LDFLAGS }}"
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    goos:
+    - linux
+    goarch:
+    - amd64
+    - arm64
+    - ppc64le
+    - s390x
+  - id: ansible-cli
+    main: ./cmd/ansible-cli/
+    binary: ansible-cli
     asmflags: "{{ .Env.GO_BUILD_ASMFLAGS }}"
     gcflags: "{{ .Env.GO_BUILD_GCFLAGS }}"
     ldflags: "{{ .Env.GO_BUILD_LDFLAGS }}"

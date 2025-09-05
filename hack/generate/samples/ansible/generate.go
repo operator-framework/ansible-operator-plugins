@@ -21,13 +21,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/kubebuilder/v4/pkg/cli"
-	cfgv3 "sigs.k8s.io/kubebuilder/v4/pkg/config/v3"
-	"sigs.k8s.io/kubebuilder/v4/pkg/plugin"
-	kustomizev2 "sigs.k8s.io/kubebuilder/v4/pkg/plugins/common/kustomize/v2"
-	"sigs.k8s.io/kubebuilder/v4/pkg/plugins/golang"
 
 	"github.com/operator-framework/ansible-operator-plugins/hack/generate/samples/internal/pkg"
-	"github.com/operator-framework/ansible-operator-plugins/pkg/plugins/ansible/v1"
+	ansiblecli "github.com/operator-framework/ansible-operator-plugins/internal/cmd/ansible-cli/cli"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/command"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/e2e"
 	"github.com/operator-framework/ansible-operator-plugins/pkg/testutils/sample"
@@ -43,24 +39,7 @@ var memcachedGVK = schema.GroupVersionKind{
 }
 
 func getCli() *cli.CLI {
-	ansibleBundle, _ := plugin.NewBundleWithOptions(
-		plugin.WithName(golang.DefaultNameQualifier),
-		plugin.WithVersion(ansible.Plugin{}.Version()),
-		plugin.WithPlugins(kustomizev2.Plugin{}, ansible.Plugin{}),
-	)
-
-	c, err := cli.New(
-		cli.WithCommandName("cli"),
-		cli.WithVersion("v0.0.0"),
-		cli.WithPlugins(
-			ansibleBundle,
-		),
-		cli.WithDefaultPlugins(cfgv3.Version, ansibleBundle),
-		cli.WithDefaultProjectVersion(cfgv3.Version),
-		cli.WithCompletion(),
-	)
-	pkg.CheckError("getting cli implementation:", err)
-	return c
+	return ansiblecli.GetPluginsCLI()
 }
 
 func GenerateMemcachedSamples(rootPath string) []sample.Sample {
