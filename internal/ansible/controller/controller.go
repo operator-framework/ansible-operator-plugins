@@ -92,7 +92,7 @@ func Add(mgr manager.Manager, options Options) *controller.Controller {
 	}
 
 	//Create new controller runtime controller and set the controller to watch GVK.
-	c, err := controller.New(fmt.Sprintf("%v-controller", strings.ToLower(options.GVK.Kind)), mgr,
+	c, err := controller.New(fmt.Sprintf("%v-%v-controller", strings.ToLower(options.GVK.Kind), strings.ToLower(options.GVK.Version)), mgr,
 		controller.Options{
 			Reconciler:              aor,
 			MaxConcurrentReconciles: options.MaxConcurrentReconciles,
