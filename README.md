@@ -1,6 +1,14 @@
-# ansible-operator-plugins
-Experimental extraction/refactoring of the Operator SDK's ansible operator plugin 
+# Ansible Operator Plugins
 
+A plugin that provide Ansible-based operator functionality for the [Operator SDK](https://github.com/operator-framework/operator-sdk). This project contains the core Ansible operator implementation that enables developers to build Kubernetes operators using Ansible playbooks and roles.
+
+## Overview
+
+This project provides the Ansible plugin for Operator SDK, allowing you to:
+- Build Kubernetes operators using Ansible playbooks and roles
+- Manage custom resources with Ansible automation
+- Handle operator lifecycle events through Ansible tasks
+- Leverage the full ecosystem of Ansible modules and collections 
 
 # Releasing Guide
 
