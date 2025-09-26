@@ -11,12 +11,14 @@ RUN rustc --version
 
 # Copy python dependencies (including ansible) to be installed using Pipenv
 COPY images/ansible-operator/Pipfile* ./
+# Copy our local ansible-runner-http replacement module
+COPY images/ansible-operator/ansible_runner_http ./ansible_runner_http
 # Instruct pip(env) not to keep a cache of installed packages,
 # to install into the global site-packages and
 # to clear the pipenv cache as well
 ENV PIP_NO_CACHE_DIR=1 \
-    PIPENV_SYSTEM=1 \
-    PIPENV_CLEAR=1
+  PIPENV_SYSTEM=1 \
+  PIPENV_CLEAR=1
 # Ensure fresh metadata rather than cached metadata, install system and pip python deps,
 # and remove those not needed at runtime.
 RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
@@ -27,6 +29,7 @@ RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
   && pipenv install --deploy \
+  && pip3 install ansible_runner_http/ \
   && pipenv check \
   && dnf remove -y gcc libffi-devel openssl-devel python3.12-devel \
   && dnf clean all \
@@ -63,8 +66,8 @@ RUN curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI_VE
 FROM base AS final
 
 ENV HOME=/opt/ansible \
-    USER_NAME=ansible \
-    USER_UID=1001
+  USER_NAME=ansible \
+  USER_UID=1001
 
 # Ensure directory permissions are properly set
 RUN echo "${USER_NAME}:x:${USER_UID}:0:${USER_NAME} user:${HOME}:/sbin/nologin" >> /etc/passwd \
