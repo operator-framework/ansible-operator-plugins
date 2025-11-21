@@ -227,7 +227,7 @@ func assertMetrics(gauge *dto.MetricFamily, count int, pods []*corev1.Pod) {
 func filterGauges(gauges []*dto.MetricFamily) []*dto.MetricFamily {
 	var filteredGauges []*dto.MetricFamily
 	for _, gauge := range gauges {
-		if *gauge.Name != "rest_client_requests_total" {
+		if *gauge.Name != "rest_client_requests_total" && *gauge.Name != "controller_runtime_conversion_webhook_panics_total" {
 			filteredGauges = append(filteredGauges, gauge)
 		}
 	}
