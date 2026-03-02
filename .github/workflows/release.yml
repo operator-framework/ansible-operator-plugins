@@ -108,7 +108,7 @@ jobs:
       # This gives us ACTIONS_RUNTIME_TOKEN and ACTIONS_CACHE_URL
       # for use in goreleaser
     - name: Expose GitHub Runtime
-      uses: crazy-max/ghaction-github-runtime@v3
+      uses: crazy-max/ghaction-github-runtime@v4
 
     - name: Run goreleaser
       run: make release
