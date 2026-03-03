@@ -69,6 +69,7 @@ spec:
           value: explicit
         ports: []
         securityContext:
+          readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
           capabilities:
             drop:
