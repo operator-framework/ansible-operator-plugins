@@ -47,7 +47,7 @@ jobs:
       run: echo stubbed-in-ci >> ansible-operator
 
     - name: Build
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         platforms: "${{ matrix.platform }}/${{ matrix.arch }}"
