@@ -38,7 +38,7 @@ jobs:
       uses: docker/setup-qemu-action@v4
     
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
       # The Dockerfile expects that ansible-operator will be copied from the
       # build context. We stub it here and then don't cache it. When Goreleaser
@@ -85,7 +85,7 @@ jobs:
 
     - name: Set up Docker Buildx
       id: setup-buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Set the release related variables
       run: |
