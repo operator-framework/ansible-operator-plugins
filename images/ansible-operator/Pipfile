@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 ansible-runner = "~=2.4.0"
-requests = "~=2.32.5"
+requests = "~=2.33.0"
 requests-unixsocket = "==0.4.1"
 ansible-core = "~=2.18.3"
 urllib3 = "~=2.6.3"
