@@ -1,6 +1,6 @@
 module github.com/operator-framework/ansible-operator-plugins
 
-go 1.26.1
+go 1.26.2
 
 require (
 	github.com/go-logr/logr v1.4.3
