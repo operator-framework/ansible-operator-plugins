@@ -231,6 +231,11 @@ func TestToSnake(t *testing.T) {
 			args: args{"URLsegressIPsEgressHTTPs"},
 			want: "_urls_egress_ips_egress_https",
 		},
+		{
+			name: "should not interpret special word when entire word is uppercase",
+			args: args{"THIS_IS_SKIP_NOT_SK_IP"},
+			want: "_this_is_skip_not_sk_ip",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
