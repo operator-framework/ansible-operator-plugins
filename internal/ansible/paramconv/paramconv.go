@@ -124,8 +124,11 @@ func ToSnake(s string) string {
 	n := ""
 	iReal := -1
 
-	// append underscore (_) as prefix and postfix to isolate special words defined in the wordMapping
-	s = preprocessWordMapping(s)
+	// skip special word handling when entire string is all uppercase (no need to check lowercase since all special words are uppercased)
+	if strings.ToUpper(s) != s {
+		// append underscore (_) as prefix and postfix to isolate special words defined in the wordMapping
+		s = preprocessWordMapping(s)
+	}
 
 	for i, v := range s {
 		iReal++
