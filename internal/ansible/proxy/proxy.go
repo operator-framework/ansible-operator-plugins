@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -144,6 +145,8 @@ func Run(done chan error, o Options) error {
 
 	// Remove the authorization header so the proxy can correctly inject the header.
 	server.Handler = removeAuthorizationHeader(server.Handler)
+	// Set the host header so that it matches the host in kubeconfig.
+	server.Handler = setHostHeader(server.Handler, o.KubeConfig)
 
 	if o.OwnerInjection {
 		server.Handler = &injectOwnerReferenceHandler{
@@ -280,6 +283,23 @@ func removeAuthorizationHeader(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		req.Header.Del("Authorization")
 		h.ServeHTTP(w, req)
+	})
+}
+
+func setHostHeader(next http.Handler, kubeConfig *rest.Config) http.Handler {
+	host := kubeConfig.Host
+	if host == "" {
+		return next
+	}
+
+	// If host is a URL, extract the host portion
+	if u, err := url.ParseRequestURI(host); err == nil {
+		host = u.Host
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		req.Header.Set("Host", host)
+		req.Host = host
+		next.ServeHTTP(w, req)
 	})
 }
 
