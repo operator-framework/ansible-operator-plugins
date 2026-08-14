@@ -224,10 +224,17 @@ func assertMetrics(gauge *dto.MetricFamily, count int, pods []*corev1.Pod) {
 	}
 }
 
+// filterGauges keeps only the "resource_created_at_seconds" metric family
+// registered by operator-lib's InstrumentedEnqueueRequestForObject, which is
+// what this suite actually exercises. This is an allow-list rather than an
+// exclude-list because controller-runtime registers its own metrics (e.g.
+// rest_client_requests_total, controller_runtime_conversion_webhook_panics_total)
+// on the same shared metrics.Registry, and the exact set has grown across
+// controller-runtime versions.
 func filterGauges(gauges []*dto.MetricFamily) []*dto.MetricFamily {
 	var filteredGauges []*dto.MetricFamily
 	for _, gauge := range gauges {
-		if *gauge.Name != "rest_client_requests_total" {
+		if gauge.GetName() == "resource_created_at_seconds" {
 			filteredGauges = append(filteredGauges, gauge)
 		}
 	}

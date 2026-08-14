@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/api/validation/path"
+	"k8s.io/apimachinery/pkg/api/validate/content"
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metainternalscheme "k8s.io/apimachinery/pkg/apis/meta/internalversion/scheme"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -252,7 +252,7 @@ func (r *RequestInfoFactory) NewRequestInfo(req *http.Request) (*RequestInfo, er
 
 		if opts.FieldSelector != nil {
 			if name, ok := opts.FieldSelector.RequiresExactMatch("metadata.name"); ok {
-				if len(path.IsValidPathSegmentName(name)) == 0 {
+				if len(content.IsPathSegmentName(name)) == 0 {
 					requestInfo.Name = name
 				}
 			}
