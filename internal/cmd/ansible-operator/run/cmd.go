@@ -15,6 +15,7 @@
 package run
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -96,6 +97,12 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 	printVersion()
 	metrics.RegisterBuildInfo(crmetrics.Registry)
 
+	// Cancellable so a registered ClusterTLSPolicy can trigger a graceful
+	// shutdown (e.g. on a cluster TLS profile change) in addition to the
+	// usual OS signal handling.
+	ctx, cancel := context.WithCancel(signals.SetupSignalHandler())
+	defer cancel()
+
 	// Load config options from the config at f.ManagerConfigPath.
 	// These options will not override those set by flags.
 	var (
@@ -143,6 +150,18 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 		options.NewClient = client.New
 	}
 
+	// Let a registered ClusterTLSPolicy (e.g. one sourced from cluster-wide
+	// configuration) augment the manager's TLS settings. No-op when nothing
+	// is registered; fails open (keeps the existing options) on error so a
+	// missing/unreachable policy source never blocks operator startup.
+	if registeredTLSPolicy != nil {
+		var tlsErr error
+		options, tlsErr = registeredTLSPolicy.Apply(ctx, cfg, options)
+		if tlsErr != nil {
+			log.Error(tlsErr, "Failed to apply cluster TLS policy; continuing with existing TLS settings")
+		}
+	}
+
 	configureWatchNamespaces(&options, log)
 
 	err = setAnsibleEnvVars(f)
@@ -156,6 +175,15 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 	if err != nil {
 		log.Error(err, "Failed to create a new manager.")
 		os.Exit(1)
+	}
+
+	// Give a registered ClusterTLSPolicy a chance to react to policy changes
+	// at runtime (e.g. cancelling ctx to trigger a graceful restart). No-op
+	// when nothing is registered.
+	if registeredTLSPolicy != nil {
+		if watchErr := registeredTLSPolicy.Watch(ctx, mgr, cancel); watchErr != nil {
+			log.Error(watchErr, "Failed to start cluster TLS policy watch")
+		}
 	}
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
@@ -246,7 +274,7 @@ func run(cmd *cobra.Command, f *flags.Flags) {
 
 	// start the operator
 	go func() {
-		done <- mgr.Start(signals.SetupSignalHandler())
+		done <- mgr.Start(ctx)
 	}()
 
 	// wait for either to finish
