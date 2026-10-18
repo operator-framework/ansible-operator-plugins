@@ -61,11 +61,23 @@ func RequestLogHandler(h http.Handler) http.Handler {
 		}
 		// fix body
 		req.Body = io.NopCloser(bytes.NewBuffer(body))
-		log.Info("Request Info", "method", req.Method, "uri", req.RequestURI, "body", string(body))
+		contentType := mediaType(req.Header.Get("Content-Type"))
+		log.Info("Request Info", "method", req.Method, "uri", req.RequestURI,
+			"content-type", contentType, "body", requestBodyLogValue(contentType, body))
 		// Removing the authorization so that the proxy can set the correct authorization.
 		req.Header.Del("Authorization")
 		h.ServeHTTP(w, req)
 	})
+}
+
+// requestBodyLogValue returns a log-safe representation of a request body.
+// Protobuf-encoded bodies are binary, so only their size is logged; all
+// other bodies are logged verbatim.
+func requestBodyLogValue(contentType string, body []byte) string {
+	if contentType == runtime.ContentTypeProtobuf {
+		return fmt.Sprintf("<%d bytes of %s>", len(body), contentType)
+	}
+	return string(body)
 }
 
 // HandlerChain will be used for users to pass defined handlers to the proxy.
