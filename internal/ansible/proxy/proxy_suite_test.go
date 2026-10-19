@@ -24,6 +24,7 @@ import (
 	"github.com/operator-framework/ansible-operator-plugins/internal/ansible/proxy/controllermap"
 	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
@@ -58,6 +59,7 @@ var _ = BeforeSuite(func() {
 		Address:           "localhost",
 		Port:              8888,
 		KubeConfig:        testMgr.GetConfig(),
+		Scheme:            clientgoscheme.Scheme,
 		Cache:             nil,
 		RESTMapper:        testMgr.GetRESTMapper(),
 		ControllerMap:     cMap,

@@ -116,8 +116,7 @@ func (i *injectOwnerReferenceHandler) ServeHTTP(w http.ResponseWriter, req *http
 				http.Error(w, m, http.StatusInternalServerError)
 				return
 			}
-			data := &unstructured.Unstructured{}
-			err = json.Unmarshal(body, data)
+			data, err := decodeRequestBody(i.scheme, k, req.Header.Get("Content-Type"), body)
 			if err != nil {
 				m := "Could not deserialize request body"
 				log.Error(err, m)
@@ -168,6 +167,10 @@ func (i *injectOwnerReferenceHandler) ServeHTTP(w http.ResponseWriter, req *http
 			log.V(2).Info("Serialized body", "Body", string(newBody))
 			req.Body = io.NopCloser(bytes.NewBuffer(newBody))
 			req.ContentLength = int64(len(newBody))
+			// The body is always forwarded to the API server as JSON, which
+			// the API server accepts regardless of the content type the
+			// client originally sent (e.g. protobuf).
+			req.Header.Set("Content-Type", runtime.ContentTypeJSON)
 
 			// add watch for resource
 			// check if resource doesn't exist in watched namespaces
