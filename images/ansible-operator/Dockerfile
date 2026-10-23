@@ -28,10 +28,11 @@ RUN set -e && microdnf clean all && rm -rf /var/cache/dnf/* \
   && python3 -m ensurepip --upgrade \
   && pip3 install --upgrade pip~=26.1.2 \
   && pip3 install pipenv==2026.6.2 pip-audit \
+  && pip3 install "setuptools>=83.0.0" \
   && pipenv install --deploy \
   && pip3 install ansible_runner_http/ \
   && pipenv audit \
-  && pip3 uninstall -y pipenv pip-audit pip \
+  && pip3 uninstall -y pipenv pip-audit pip virtualenv filelock \
   && microdnf remove -y gcc libffi-devel openssl-devel python3.12-devel which \
   && microdnf clean all \
   && rm -rf /var/cache/dnf
