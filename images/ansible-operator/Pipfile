@@ -8,8 +8,13 @@ ansible-runner = "~=2.4.0"
 requests = "~=2.33.0"
 requests-unixsocket = "==0.4.1"
 ansible-core = "~=2.18.3"
-urllib3 = "~=2.7.0"
+urllib3 = "~=2.8.0"
 kubernetes = "==33.1.0"
+certifi = "==2026.10.19"
+cryptography = "~=50.0.0"
+oauthlib = "~=4.0.1"
+pyasn1 = "~=0.6.5"
+python-dateutil = "<3"
 
 [dev-packages]
 
