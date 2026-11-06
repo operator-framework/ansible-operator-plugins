@@ -26,7 +26,7 @@ RUN set -e && microdnf clean all && rm -rf /var/cache/dnf/* \
   && microdnf install -y gcc libffi-devel openssl-devel python3.12-devel which \
   && pushd /usr/local/bin && ln -sf ../../bin/python3.12 python3 && popd \
   && python3 -m ensurepip --upgrade \
-  && pip3 install --upgrade pip~=26.1.2 \
+  && pip3 install --upgrade pip~=26.2.0 \
   && pip3 install pipenv==2026.6.2 pip-audit \
   && pip3 install "setuptools>=83.0.0" \
   && pipenv install --deploy \
